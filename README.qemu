@@ -13,3 +13,5 @@ are currently supported in 32 and 64 bit variants:
 Use of the QEMU images is covered in the Yocto Project Reference Manual.
 The appropriate MACHINE variable value corresponding to the target is given
 in brackets.
+
+Adding dummy string.
