@@ -95,11 +95,6 @@ do_install_append() {
 	# Automake 1.12 won't install empty directories, but we need the
 	# plugins directory to be present for ownership
 	mkdir -p ${D}${libdir}/connman/plugins
-
-    # For read-only filesystem, do not create links during bootup
-    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
-        ln -sf ../run/connman/resolv.conf ${D}${sysconfdir}/resolv-conf.connman
-    fi
 }
 
 # These used to be plugins, but now they are core
