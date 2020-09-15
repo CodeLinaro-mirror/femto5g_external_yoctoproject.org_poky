@@ -66,7 +66,9 @@ CORE_IMAGE_BASE_INSTALL = '\
     ${CORE_IMAGE_EXTRA_INSTALL} \
     '
 
-CORE_IMAGE_EXTRA_INSTALL ?= ""
+CORE_IMAGE_EXTRA_INSTALL ?= "fpga-if pfver fsm-tti-intr fsm-dp kickstart fsm-monitor \
+                             directory dp-perf diagfwd fsm-temp fsmver pf-type \
+                             dtc usbutils libusb1 libusb-compat libpcap libbsd zlib"
 
 IMAGE_INSTALL ?= "${CORE_IMAGE_BASE_INSTALL}"
 
