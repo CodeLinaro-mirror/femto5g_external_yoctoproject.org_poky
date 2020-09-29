@@ -69,7 +69,7 @@ CORE_IMAGE_BASE_INSTALL = '\
 CORE_IMAGE_EXTRA_INSTALL ?= "fpga-if pfver fsm-tti-intr fsm-dp kickstart fsm-monitor \
                              dp-perf diagfwd fsm-temp fsmver pf-type dtc usbutils \
                              libusb1 libusb-compat libpcap libbsd zlib nfs-utils \
-                             rsyslog fsm-startup"
+                             rsyslog fsm-startup rf tfcs-qmi-if tfcs"
 
 IMAGE_INSTALL ?= "${CORE_IMAGE_BASE_INSTALL}"
 
