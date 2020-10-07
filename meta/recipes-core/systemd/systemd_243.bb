@@ -299,6 +299,11 @@ do_install() {
     # We use package postinsts for the hwdb update, as the update service is
     # easily triggered for no reason and will slow down boots.
     find ${D} -name systemd-hwdb-update.service -delete
+
+    # Journaling disable
+    if [ -f ${D}${sysconfdir}/systemd/journald.conf ]; then
+        sed -i 's/#Storage=auto/Storage=none/g' ${D}${sysconfdir}/systemd/journald.conf
+    fi
 }
 
 python populate_packages_prepend (){
