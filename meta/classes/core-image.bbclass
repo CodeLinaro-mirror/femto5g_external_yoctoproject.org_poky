@@ -70,7 +70,7 @@ CORE_IMAGE_EXTRA_INSTALL ?= "fpga-if pfver fsm-tti-intr fsm-dp kickstart fsm-mon
                              dp-perf diagfwd fsm-temp fsmver pf-type dtc usbutils \
                              libusb1 libusb-compat libpcap libbsd zlib nfs-utils \
                              rsyslog fsm-startup rf tfcs-qmi-if tfcs android-tools \
-                             libpcre libcap mac-e"
+                             libpcre libcap mac-e gdb"
 
 IMAGE_INSTALL ?= "${CORE_IMAGE_BASE_INSTALL}"
 
