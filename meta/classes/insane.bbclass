@@ -444,12 +444,14 @@ def package_qa_check_buildpaths(path, name, d, elf, messages):
     Check for build paths inside target files and error if paths are not
     explicitly ignored.
     """
+    import stat
     # Ignore .debug files, not interesting
     if path.find(".debug") != -1:
         return
 
-    # Ignore symlinks
-    if os.path.islink(path):
+    # Ignore symlinks/devs/fifos
+    mode = os.lstat(path).st_mode
+    if stat.S_ISLNK(mode) or stat.S_ISBLK(mode) or stat.S_ISFIFO(mode) or stat.S_ISCHR(mode) or stat.S_ISSOCK(mode):
         return
 
     tmpdir = bytes(d.getVar('TMPDIR'), encoding="utf-8")
@@ -550,7 +552,10 @@ python populate_lic_qa_checksum() {
                 import hashlib
                 lineno = 0
                 license = []
-                m = hashlib.new('MD5', usedforsecurity=False)
+                try:
+                    m = hashlib.new('MD5', usedforsecurity=False)
+                except TypeError:
+                    m = hashlib.new('MD5')
                 for line in f:
                     lineno += 1
                     if (lineno >= beginline):
@@ -970,7 +975,7 @@ def package_qa_check_host_user(path, name, d, elf, messages):
 
     dest = d.getVar('PKGDEST')
     pn = d.getVar('PN')
-    home = os.path.join(dest, 'home')
+    home = os.path.join(dest, name, 'home')
     if path == home or path.startswith(home + os.sep):
         return
 
@@ -1194,25 +1199,28 @@ python do_qa_patch() {
     import re
     from oe import patch
 
+    coremeta_path = os.path.join(d.getVar('COREBASE'), 'meta', '')
     for url in patch.src_patches(d):
        (_, _, fullpath, _, _, _) = bb.fetch.decodeurl(url)
 
        # skip patches not in oe-core
-       if '/meta/' not in fullpath:
+       if not os.path.abspath(fullpath).startswith(coremeta_path):
            continue
 
-       content = open(fullpath, encoding='utf-8', errors='ignore').read()
        kinda_status_re = re.compile(r"^.*upstream.*status.*$", re.IGNORECASE | re.MULTILINE)
        strict_status_re = re.compile(r"^Upstream-Status: (Pending|Submitted|Denied|Accepted|Inappropriate|Backport|Inactive-Upstream)( .+)?$", re.MULTILINE)
-       match_kinda = kinda_status_re.search(content)
-       match_strict = strict_status_re.search(content)
        guidelines = "https://www.openembedded.org/wiki/Commit_Patch_Message_Guidelines#Patch_Header_Recommendations:_Upstream-Status"
 
-       if not match_strict:
-           if match_kinda:
-               bb.error("Malformed Upstream-Status in patch\n%s\nPlease correct according to %s :\n%s" % (fullpath, guidelines, match_kinda.group(0)))
-           else:
-               bb.error("Missing Upstream-Status in patch\n%s\nPlease add according to %s ." % (fullpath, guidelines))
+       with open(fullpath, encoding='utf-8', errors='ignore') as f:
+           file_content = f.read()
+           match_kinda = kinda_status_re.search(file_content)
+           match_strict = strict_status_re.search(file_content)
+
+           if not match_strict:
+               if match_kinda:
+                   bb.error("Malformed Upstream-Status in patch\n%s\nPlease correct according to %s :\n%s" % (fullpath, guidelines, match_kinda.group(0)))
+               else:
+                   bb.error("Missing Upstream-Status in patch\n%s\nPlease add according to %s ." % (fullpath, guidelines))
 }
 
 python do_qa_configure() {

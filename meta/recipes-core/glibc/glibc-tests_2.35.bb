@@ -1,9 +1,11 @@
 require glibc_${PV}.bb
 require glibc-tests.inc
 
-inherit ptest
+inherit ptest features_check
+REQUIRED_DISTRO_FEATURES = "ptest"
 
-SRC_URI:append = " \
+SRC_URI += " \
+	file://reproducible-paths.patch \
 	file://run-ptest \
 "
 
@@ -17,7 +19,8 @@ python __anonymous() {
        d.setVar("PROVIDES", "${PN} ${PN}-ptest")
        d.setVar("RPROVIDES", "${PN} ${PN}-ptest")
 
-       d.setVar("BBCLASSEXTEND", "")
+       bbclassextend = d.getVar("BBCLASSEXTEND").replace("nativesdk", "").strip()
+       d.setVar("BBCLASSEXTEND", bbclassextend)
        d.setVar("RRECOMMENDS", "")
        d.setVar("SYSTEMD_SERVICE:nscd", "")
        d.setVar("SYSTEMD_PACKAGES", "")
@@ -27,7 +30,9 @@ python __anonymous() {
 RPROVIDES:${PN} = "${PN}"
 RRECOMMENDS:${PN} = ""
 RDEPENDS:${PN} = " glibc sed"
-DEPENDS:append = " sed"
+DEPENDS += "sed"
+
+export oe_srcdir="${exec_prefix}/src/debug/glibc/${PV}/"
 
 # Just build tests for target - do not run them
 do_check:append () {
@@ -94,7 +99,7 @@ python populate_packages:prepend () {
         d.setVar('DEBIAN_NAMES', '')
 }
 
-FILES:${PN} = "${PTEST_PATH}/* /usr/src/debug/glibc-tests/*"
+FILES:${PN} = "${PTEST_PATH}/* /usr/src/debug/${PN}/*"
 
 EXCLUDE_FROM_SHLIBS = "1"
 

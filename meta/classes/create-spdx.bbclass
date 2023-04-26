@@ -19,12 +19,12 @@ SPDX_TOOL_VERSION ??= "1.0"
 SPDXRUNTIMEDEPLOY = "${SPDXDIR}/runtime-deploy"
 
 SPDX_INCLUDE_SOURCES ??= "0"
-SPDX_INCLUDE_PACKAGED ??= "0"
 SPDX_ARCHIVE_SOURCES ??= "0"
 SPDX_ARCHIVE_PACKAGED ??= "0"
 
 SPDX_UUID_NAMESPACE ??= "sbom.openembedded.org"
 SPDX_NAMESPACE_PREFIX ??= "http://spdx.org/spdxdoc"
+SPDX_PRETTY ??= "0"
 
 SPDX_LICENSES ??= "${COREBASE}/meta/files/spdx-licenses.json"
 
@@ -34,8 +34,6 @@ SPDX_SUPPLIER[doc] = "The SPDX PackageSupplier field for SPDX packages created f
     this recipe. For SPDX documents create using this class during the build, this \
     is the contact information for the person or organization who is doing the \
     build."
-
-do_image_complete[depends] = "virtual/kernel:do_create_spdx"
 
 def extract_licenses(filename):
     import re
@@ -77,6 +75,11 @@ def recipe_spdx_is_native(d, recipe):
 
 def is_work_shared_spdx(d):
     return bb.data.inherits_class('kernel', d) or ('work-shared' in d.getVar('WORKDIR'))
+
+def get_json_indent(d):
+    if d.getVar("SPDX_PRETTY") == "1":
+        return 2
+    return None
 
 python() {
     import json
@@ -212,7 +215,7 @@ def add_package_files(d, doc, spdx_pkg, topdir, get_spdxid, get_types, *, archiv
             filepath = Path(subdir) / file
             filename = str(filepath.relative_to(topdir))
 
-            if filepath.is_file() and not filepath.is_symlink():
+            if not filepath.is_symlink() and filepath.is_file():
                 spdx_file = oe.spdx.SPDXFile()
                 spdx_file.SPDXID = get_spdxid(file_counter)
                 for t in get_types(filepath):
@@ -425,7 +428,6 @@ python do_create_spdx() {
 
     deploy_dir_spdx = Path(d.getVar("DEPLOY_DIR_SPDX"))
     spdx_workdir = Path(d.getVar("SPDXWORK"))
-    include_packaged = d.getVar("SPDX_INCLUDE_PACKAGED") == "1"
     include_sources = d.getVar("SPDX_INCLUDE_SOURCES") == "1"
     archive_sources = d.getVar("SPDX_ARCHIVE_SOURCES") == "1"
     archive_packaged = d.getVar("SPDX_ARCHIVE_PACKAGED") == "1"
@@ -447,12 +449,13 @@ python do_create_spdx() {
     recipe.name = d.getVar("PN")
     recipe.versionInfo = d.getVar("PV")
     recipe.SPDXID = oe.sbom.get_recipe_spdxid(d)
-    recipe.packageSupplier = d.getVar("SPDX_SUPPLIER")
+    recipe.supplier = d.getVar("SPDX_SUPPLIER")
     if bb.data.inherits_class("native", d) or bb.data.inherits_class("cross", d):
         recipe.annotations.append(create_annotation(d, "isNative"))
 
     for s in d.getVar('SRC_URI').split():
         if not s.startswith("file://"):
+            s = s.split(';')[0]
             recipe.downloadLocation = s
             break
     else:
@@ -517,7 +520,7 @@ python do_create_spdx() {
 
     dep_recipes = collect_dep_recipes(d, doc, recipe)
 
-    doc_sha1 = oe.sbom.write_doc(d, doc, "recipes")
+    doc_sha1 = oe.sbom.write_doc(d, doc, "recipes", indent=get_json_indent(d))
     dep_recipes.append(oe.sbom.DepRecipe(doc, doc_sha1, recipe))
 
     recipe_ref = oe.spdx.SPDXExternalDocumentRef()
@@ -557,7 +560,7 @@ python do_create_spdx() {
             spdx_package.name = pkg_name
             spdx_package.versionInfo = d.getVar("PV")
             spdx_package.licenseDeclared = convert_license_to_spdx(package_license, package_doc, d, found_licenses)
-            spdx_package.packageSupplier = d.getVar("SPDX_SUPPLIER")
+            spdx_package.supplier = d.getVar("SPDX_SUPPLIER")
 
             package_doc.packages.append(spdx_package)
 
@@ -573,6 +576,7 @@ python do_create_spdx() {
                     pkgdest / package,
                     lambda file_counter: oe.sbom.get_packaged_file_spdxid(pkg_name, file_counter),
                     lambda filepath: ["BINARY"],
+                    ignore_top_level_dirs=['CONTROL', 'DEBIAN'],
                     archive=archive,
                 )
 
@@ -581,7 +585,7 @@ python do_create_spdx() {
 
             add_package_sources_from_debug(d, package_doc, spdx_package, package, package_files, sources)
 
-            oe.sbom.write_doc(d, package_doc, "packages")
+            oe.sbom.write_doc(d, package_doc, "packages", indent=get_json_indent(d))
 }
 # NOTE: depending on do_unpack is a hack that is necessary to get it's dependencies for archive the source
 addtask do_create_spdx after do_package do_packagedata do_unpack before do_populate_sdk do_build do_rm_work
@@ -745,7 +749,7 @@ python do_create_runtime_spdx() {
                 )
                 seen_deps.add(dep)
 
-            oe.sbom.write_doc(d, runtime_doc, "runtime", spdx_deploy)
+            oe.sbom.write_doc(d, runtime_doc, "runtime", spdx_deploy, indent=get_json_indent(d))
 }
 
 addtask do_create_runtime_spdx after do_create_spdx before do_build do_rm_work
@@ -789,6 +793,7 @@ def spdx_get_src(d):
             bb.build.exec_func('do_unpack', d)
         # Copy source of kernel to spdx_workdir
         if is_work_shared_spdx(d):
+            share_src = d.getVar('WORKDIR')
             d.setVar('WORKDIR', spdx_workdir)
             d.setVar('STAGING_DIR_NATIVE', spdx_sysroot_native)
             src_dir = spdx_workdir + "/" + d.getVar('PN')+ "-" + d.getVar('PV') + "-" + d.getVar('PR')
@@ -796,8 +801,8 @@ def spdx_get_src(d):
             if bb.data.inherits_class('kernel',d):
                 share_src = d.getVar('STAGING_KERNEL_DIR')
             cmd_copy_share = "cp -rf " + share_src + "/* " + src_dir + "/"
-            cmd_copy_kernel_result = os.popen(cmd_copy_share).read()
-            bb.note("cmd_copy_kernel_result = " + cmd_copy_kernel_result)
+            cmd_copy_shared_res = os.popen(cmd_copy_share).read()
+            bb.note("cmd_copy_shared_result = " + cmd_copy_shared_res)
 
             git_path = src_dir + "/.git"
             if os.path.exists(git_path):
@@ -897,7 +902,7 @@ def combine_spdx(d, rootfs_name, rootfs_deploydir, rootfs_spdxid, packages):
     image.name = d.getVar("PN")
     image.versionInfo = d.getVar("PV")
     image.SPDXID = rootfs_spdxid
-    image.packageSupplier = d.getVar("SPDX_SUPPLIER")
+    image.supplier = d.getVar("SPDX_SUPPLIER")
 
     doc.packages.append(image)
 
@@ -940,7 +945,7 @@ def combine_spdx(d, rootfs_name, rootfs_deploydir, rootfs_spdxid, packages):
     image_spdx_path = rootfs_deploydir / (rootfs_name + ".spdx.json")
 
     with image_spdx_path.open("wb") as f:
-        doc.to_json(f, sort_keys=True)
+        doc.to_json(f, sort_keys=True, indent=get_json_indent(d))
 
     num_threads = int(d.getVar("BB_NUMBER_THREADS"))
 
@@ -998,7 +1003,11 @@ def combine_spdx(d, rootfs_name, rootfs_deploydir, rootfs_spdxid, packages):
 
             index["documents"].sort(key=lambda x: x["filename"])
 
-            index_str = io.BytesIO(json.dumps(index, sort_keys=True).encode("utf-8"))
+            index_str = io.BytesIO(json.dumps(
+                index,
+                sort_keys=True,
+                indent=get_json_indent(d),
+            ).encode("utf-8"))
 
             info = tarfile.TarInfo()
             info.name = "index.json"
@@ -1012,4 +1021,4 @@ def combine_spdx(d, rootfs_name, rootfs_deploydir, rootfs_spdxid, packages):
 
     spdx_index_path = rootfs_deploydir / (rootfs_name + ".spdx.index.json")
     with spdx_index_path.open("w") as f:
-        json.dump(index, f, sort_keys=True)
+        json.dump(index, f, sort_keys=True, indent=get_json_indent(d))

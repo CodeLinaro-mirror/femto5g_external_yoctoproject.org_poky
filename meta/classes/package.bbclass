@@ -382,6 +382,11 @@ def splitdebuginfo(file, dvar, dv, d):
     debugfile = dvar + dest
     sources = []
 
+    if file.endswith(".ko") and file.find("/lib/modules/") != -1:
+        if oe.package.is_kernel_module_signed(file):
+            bb.debug(1, "Skip strip on signed module %s" % file)
+            return (file, sources)
+
     # Split the file...
     bb.utils.mkdirhier(os.path.dirname(debugfile))
     #bb.note("Split %s -> %s" % (file, debugfile))
@@ -422,7 +427,6 @@ def splitstaticdebuginfo(file, dvar, dv, d):
     # return a mapping of files:debugsources
 
     import stat
-    import shutil
 
     src = file[len(dvar):]
     dest = dv["staticlibdir"] + os.path.dirname(src) + dv["staticdir"] + "/" + os.path.basename(src) + dv["staticappend"]
@@ -480,16 +484,31 @@ def inject_minidebuginfo(file, dvar, dv, d):
         bb.debug(1, 'ELF file {} has no debuginfo, skipping minidebuginfo injection'.format(file))
         return
 
+    # minidebuginfo does not make sense to apply to ELF objects other than
+    # executables and shared libraries, skip applying the minidebuginfo
+    # generation for objects like kernel modules.
+    for line in subprocess.check_output([readelf, '-h', debugfile], universal_newlines=True).splitlines():
+        if not line.strip().startswith("Type:"):
+            continue
+        elftype = line.split(":")[1].strip()
+        if not any(elftype.startswith(i) for i in ["EXEC", "DYN"]):
+            bb.debug(1, 'ELF file {} is not executable/shared, skipping minidebuginfo injection'.format(file))
+            return
+        break
+
     # Find non-allocated PROGBITS, NOTE, and NOBITS sections in the debuginfo.
     # We will exclude all of these from minidebuginfo to save space.
     remove_section_names = []
     for line in subprocess.check_output([readelf, '-W', '-S', debugfile], universal_newlines=True).splitlines():
-        fields = line.split()
-        if len(fields) < 8:
+        # strip the leading "  [ 1]" section index to allow splitting on space
+        if ']' not in line:
+            continue
+        fields = line[line.index(']') + 1:].split()
+        if len(fields) < 7:
             continue
         name = fields[0]
         type = fields[1]
-        flags = fields[7]
+        flags = fields[6]
         # .debug_ sections will be removed by objcopy -S so no need to explicitly remove them
         if name.startswith('.debug_'):
             continue
@@ -554,13 +573,25 @@ def copydebugsources(debugsrcdir, sources, d):
         strip = d.getVar("STRIP")
         objcopy = d.getVar("OBJCOPY")
         workdir = d.getVar("WORKDIR")
+        sdir = d.getVar("S")
+        sparentdir = os.path.dirname(os.path.dirname(sdir))
+        sbasedir = os.path.basename(os.path.dirname(sdir)) + "/" + os.path.basename(sdir)
         workparentdir = os.path.dirname(os.path.dirname(workdir))
         workbasedir = os.path.basename(os.path.dirname(workdir)) + "/" + os.path.basename(workdir)
+
+        # If S isnt based on WORKDIR we can infer our sources are located elsewhere,
+        # e.g. using externalsrc; use S as base for our dirs
+        if workdir in sdir or 'work-shared' in sdir:
+            basedir = workbasedir
+            parentdir = workparentdir
+        else:
+            basedir = sbasedir
+            parentdir = sparentdir
 
         # If build path exists in sourcefile, it means toolchain did not use
         # -fdebug-prefix-map to compile
         if checkbuildpath(sourcefile, d):
-            localsrc_prefix = workparentdir + "/"
+            localsrc_prefix = parentdir + "/"
         else:
             localsrc_prefix = "/usr/src/debug/"
 
@@ -582,7 +613,7 @@ def copydebugsources(debugsrcdir, sources, d):
         processdebugsrc += "sed 's#%s##g' | "
         processdebugsrc += "(cd '%s' ; cpio -pd0mlL --no-preserve-owner '%s%s' 2>/dev/null)"
 
-        cmd = processdebugsrc % (sourcefile, workbasedir, localsrc_prefix, workparentdir, dvar, debugsrcdir)
+        cmd = processdebugsrc % (sourcefile, basedir, localsrc_prefix, parentdir, dvar, debugsrcdir)
         try:
             subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError:
@@ -592,8 +623,21 @@ def copydebugsources(debugsrcdir, sources, d):
         # cpio seems to have a bug with -lL together and symbolic links are just copied, not dereferenced.
         # Work around this by manually finding and copying any symbolic links that made it through.
         cmd = "find %s%s -type l -print0 -delete | sed s#%s%s/##g | (cd '%s' ; cpio -pd0mL --no-preserve-owner '%s%s')" % \
-                (dvar, debugsrcdir, dvar, debugsrcdir, workparentdir, dvar, debugsrcdir)
+                (dvar, debugsrcdir, dvar, debugsrcdir, parentdir, dvar, debugsrcdir)
         subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+
+
+        # debugsources.list may be polluted from the host if we used externalsrc,
+        # cpio uses copy-pass and may have just created a directory structure
+        # matching the one from the host, if thats the case move those files to
+        # debugsrcdir to avoid host contamination.
+        # Empty dir structure will be deleted in the next step.
+
+        # Same check as above for externalsrc
+        if workdir not in sdir:
+            if os.path.exists(dvar + debugsrcdir + sdir):
+                cmd = "mv %s%s%s/* %s%s" % (dvar, debugsrcdir, sdir, dvar,debugsrcdir)
+                subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
 
         # The copy by cpio may have resulted in some empty directories!  Remove these
         cmd = "find %s%s -empty -type d -delete" % (dvar, debugsrcdir)
@@ -663,7 +707,10 @@ def runtime_mapping_rename (varname, pkg, d):
 # Used by do_packagedata (and possibly other routines post do_package)
 #
 
+PRSERV_ACTIVE = "${@bool(d.getVar("PRSERV_HOST"))}"
+PRSERV_ACTIVE[vardepvalue] = "${PRSERV_ACTIVE}"
 package_get_auto_pr[vardepsexclude] = "BB_TASKDEPDATA"
+package_get_auto_pr[vardeps] += "PRSERV_ACTIVE"
 python package_get_auto_pr() {
     import oe.prservice
 
@@ -807,15 +854,10 @@ python perform_packagecopy () {
     dest = d.getVar('D')
     dvar = d.getVar('PKGD')
 
-    # Remove ${D}/sysroot-only if present
-    sysroot_only = os.path.join(dest, 'sysroot-only')
-    if cpath.exists(sysroot_only) and cpath.isdir(sysroot_only):
-        shutil.rmtree(sysroot_only)
-
     # Start by package population by taking a copy of the installed
     # files to operate on
     # Preserve sparse files and hard links
-    cmd = 'tar -cf - -C %s -p -S . | tar -xf - -C %s' % (dest, dvar)
+    cmd = 'tar --exclude=./sysroot-only -cf - -C %s -p -S . | tar -xf - -C %s' % (dest, dvar)
     subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
 
     # replace RPATHs for the nativesdk binaries, to make them relocatable
