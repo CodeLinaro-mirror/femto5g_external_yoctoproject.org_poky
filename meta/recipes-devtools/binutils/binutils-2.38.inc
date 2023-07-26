@@ -42,5 +42,19 @@ SRC_URI = "\
      file://0018-CVE-2022-38128-1.patch \
      file://0018-CVE-2022-38128-2.patch \
      file://0018-CVE-2022-38128-3.patch \
+     file://0019-CVE-2022-4285.patch \
+     file://0020-CVE-2023-22608-1.patch \
+     file://0020-CVE-2023-22608-2.patch \
+     file://0020-CVE-2023-22608-3.patch \
+     file://0021-CVE-2023-1579-1.patch \
+     file://0021-CVE-2023-1579-2.patch \
+     file://0021-CVE-2023-1579-3.patch \
+     file://0021-CVE-2023-1579-4.patch \
+     file://0022-CVE-2023-25584-1.patch \
+     file://0022-CVE-2023-25584-2.patch \
+     file://0022-CVE-2023-25584-3.patch \
+     file://0023-CVE-2023-25585.patch \
+     file://0026-CVE-2023-1972.patch \
+     file://0025-CVE-2023-25588.patch \
 "
 S  = "${WORKDIR}/git"
