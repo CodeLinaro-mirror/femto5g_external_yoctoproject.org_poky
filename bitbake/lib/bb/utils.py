@@ -421,12 +421,14 @@ def better_eval(source, locals, extraglobals = None):
     return eval(source, ctx, locals)
 
 @contextmanager
-def fileslocked(files):
+def fileslocked(files, *args, **kwargs):
     """Context manager for locking and unlocking file locks."""
     locks = []
     if files:
         for lockfile in files:
-            locks.append(bb.utils.lockfile(lockfile))
+            l = bb.utils.lockfile(lockfile, *args, **kwargs)
+            if l is not None:
+                locks.append(l)
 
     try:
         yield
@@ -459,8 +461,15 @@ def lockfile(name, shared=False, retry=True, block=False):
     consider the possibility of sending a signal to the process to break
     out - at which point you want block=True rather than retry=True.
     """
+    basename = os.path.basename(name)
+    if len(basename) > 255:
+        root, ext = os.path.splitext(basename)
+        basename = root[:255 - len(ext)] + ext
+
     dirname = os.path.dirname(name)
     mkdirhier(dirname)
+
+    name = os.path.join(dirname, basename)
 
     if not os.access(dirname, os.W_OK):
         logger.error("Unable to acquire lock '%s', directory is not writable",
@@ -495,7 +504,7 @@ def lockfile(name, shared=False, retry=True, block=False):
                     return lf
             lf.close()
         except OSError as e:
-            if e.errno == errno.EACCES:
+            if e.errno == errno.EACCES or e.errno == errno.ENAMETOOLONG:
                 logger.error("Unable to acquire lock '%s', %s",
                              e.strerror, name)
                 sys.exit(1)

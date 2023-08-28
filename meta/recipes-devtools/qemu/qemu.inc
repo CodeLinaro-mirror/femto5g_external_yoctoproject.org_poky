@@ -92,6 +92,27 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2020-27617.patch \
            file://CVE-2020-28916.patch \
            file://CVE-2021-3682.patch \
+           file://CVE-2020-13253_1.patch \
+           file://CVE-2020-13253_2.patch \
+           file://CVE-2020-13253_3.patch \
+           file://CVE-2020-13253_4.patch \
+           file://CVE-2020-13253_5.patch \
+           file://CVE-2020-13791.patch \
+           file://CVE-2022-35414.patch \
+           file://CVE-2020-27821.patch \
+           file://CVE-2020-13754-1.patch \
+           file://CVE-2020-13754-2.patch \
+           file://CVE-2020-13754-3.patch \
+           file://CVE-2020-13754-4.patch \
+           file://CVE-2021-3713.patch \
+           file://CVE-2021-3748.patch \
+           file://CVE-2021-3930.patch \
+           file://CVE-2021-4206.patch \
+           file://CVE-2021-4207.patch \
+           file://CVE-2022-0216-1.patch \
+           file://CVE-2022-0216-2.patch \
+           file://CVE-2021-3750.patch \
+	   file://CVE-2021-3638.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -108,6 +129,9 @@ CVE_CHECK_WHITELIST += "CVE-2007-0998"
 # 'The issues identified by this CVE were determined to not constitute a vulnerability.'
 # https://bugzilla.redhat.com/show_bug.cgi?id=1609015#c11
 CVE_CHECK_WHITELIST += "CVE-2018-18438"
+
+# the issue introduced in v5.1.0-rc0
+CVE_CHECK_WHITELIST += "CVE-2020-27661"
 
 COMPATIBLE_HOST_mipsarchn32 = "null"
 COMPATIBLE_HOST_mipsarchn64 = "null"
@@ -248,6 +272,13 @@ PACKAGECONFIG[xkbcommon] = "--enable-xkbcommon,--disable-xkbcommon,libxkbcommon"
 PACKAGECONFIG[libudev] = "--enable-libudev,--disable-libudev,eudev"
 PACKAGECONFIG[libxml2] = "--enable-libxml2,--disable-libxml2,libxml2"
 PACKAGECONFIG[seccomp] = "--enable-seccomp,--disable-seccomp,libseccomp"
+PACKAGECONFIG[capstone] = "--enable-capstone,--disable-capstone"
+# libnfs is currently provided by meta-kodi
+PACKAGECONFIG[libnfs] = "--enable-libnfs,--disable-libnfs,libnfs"
+PACKAGECONFIG[brlapi] = "--enable-brlapi,--disable-brlapi"
+PACKAGECONFIG[vde] = "--enable-vde,--disable-vde"
+PACKAGECONFIG[rbd] = "--enable-rbd,--disable-rbd"
+PACKAGECONFIG[rdma] = "--enable-rdma,--disable-rdma"
 
 INSANE_SKIP_${PN} = "arch"
 
