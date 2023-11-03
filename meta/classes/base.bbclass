@@ -115,6 +115,10 @@ def setup_hosttools_dir(dest, toolsvar, d, fatal=True):
     tools = d.getVar(toolsvar).split()
     origbbenv = d.getVar("BB_ORIGENV", False)
     path = origbbenv.getVar("PATH")
+    # Need to ignore our own scripts directories to avoid circular links
+    for p in path.split(":"):
+        if p.endswith("/scripts"):
+            path = path.replace(p, "/ignoreme")
     bb.utils.mkdirhier(dest)
     notfound = []
     for tool in tools:
@@ -128,7 +132,7 @@ def setup_hosttools_dir(dest, toolsvar, d, fatal=True):
             # /usr/local/bin/ccache/gcc -> /usr/bin/ccache, then which(gcc)
             # would return /usr/local/bin/ccache/gcc, but what we need is
             # /usr/bin/gcc, this code can check and fix that.
-            if "ccache" in srctool:
+            if os.path.islink(srctool) and os.path.basename(os.readlink(srctool)) == 'ccache':
                 srctool = bb.utils.which(path, tool, executable=True, direction=1)
             if srctool:
                 os.symlink(srctool, desttool)
@@ -204,6 +208,7 @@ addtask do_deploy_source_date_epoch_setscene
 addtask do_deploy_source_date_epoch before do_configure after do_patch
 
 python create_source_date_epoch_stamp() {
+    # Version: 1
     source_date_epoch = oe.reproducible.get_source_date_epoch(d, d.getVar('S'))
     oe.reproducible.epochfile_write(source_date_epoch, d.getVar('SDE_FILE'), d)
 }
@@ -592,9 +597,9 @@ python () {
 
             for lic_exception in exceptions:
                 if ":" in lic_exception:
-                    lic_exception.split(":")[0]
+                    lic_exception = lic_exception.split(":")[1]
                 if lic_exception in oe.license.obsolete_license_list():
-                    bb.fatal("Invalid license %s used in INCOMPATIBLE_LICENSE_EXCEPTIONS" % lic_exception)
+                    bb.fatal("Obsolete license %s used in INCOMPATIBLE_LICENSE_EXCEPTIONS" % lic_exception)
 
             pkgs = d.getVar('PACKAGES').split()
             skipped_pkgs = {}

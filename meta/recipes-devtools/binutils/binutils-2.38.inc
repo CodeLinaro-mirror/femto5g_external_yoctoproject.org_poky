@@ -18,7 +18,7 @@ SRCBRANCH ?= "binutils-2_38-branch"
 
 UPSTREAM_CHECK_GITTAGREGEX = "binutils-(?P<pver>\d+_(\d_?)*)"
 
-SRCREV ?= "6938a3aca19044aeb9bc4b9564e04f9092a701ed"
+SRCREV ?= "dc2474e7d204c124ab5a21b4490aa46eb7e1d4c3"
 BINUTILS_GIT_URI ?= "git://sourceware.org/git/binutils-gdb.git;branch=${SRCBRANCH};protocol=git"
 SRC_URI = "\
      ${BINUTILS_GIT_URI} \
@@ -32,5 +32,16 @@ SRC_URI = "\
      file://0011-sync-with-OE-libtool-changes.patch \
      file://0012-Check-for-clang-before-checking-gcc-version.patch \
      file://0013-Avoid-as-info-race-condition.patch \
+     file://0014-CVE-2019-1010204.patch \
+     file://0015-CVE-2022-38533.patch \
+     file://0016-CVE-2022-38126.patch \
+     file://0017-CVE-2022-38127-1.patch \
+     file://0017-CVE-2022-38127-2.patch \
+     file://0017-CVE-2022-38127-3.patch \
+     file://0017-CVE-2022-38127-4.patch \
+     file://0018-CVE-2022-38128-1.patch \
+     file://0018-CVE-2022-38128-2.patch \
+     file://0018-CVE-2022-38128-3.patch \
+     file://0019-CVE-2022-4285.patch \
 "
 S  = "${WORKDIR}/git"
