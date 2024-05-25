@@ -137,11 +137,13 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2021-3409-4.patch \
            file://CVE-2021-3409-5.patch \
            file://hw-display-qxl-Pass-requested-buffer-size-to-qxl_phy.patch \
-           file://CVE-2023-0330_1.patch \
-           file://CVE-2023-0330_2.patch \
+           file://CVE-2023-0330.patch \
            file://CVE-2023-3354.patch \
 	   file://CVE-2023-3180.patch \
            file://CVE-2020-24165.patch \
+           file://CVE-2023-5088.patch \
+           file://9pfs-local-ignore-O_NOATIME-if-we-don-t-have-permiss.patch \
+           file://CVE-2023-2861.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -166,6 +168,13 @@ CVE_CHECK_WHITELIST += "CVE-2020-27661"
 # https://bugzilla.redhat.com/show_bug.cgi?id=2167423
 # this bug related to windows specific.
 CVE_CHECK_WHITELIST += "CVE-2023-0664"
+
+# As per https://bugzilla.redhat.com/show_bug.cgi?id=2203387
+# RHEL specific issue
+CVE_CHECK_WHITELIST += "CVE-2023-2680"
+
+# Affected only `qemu-kvm` shipped with Red Hat Enterprise Linux 8.3 release.
+CVE_CHECK_WHITELIST += "CVE-2021-20295"
 
 COMPATIBLE_HOST_mipsarchn32 = "null"
 COMPATIBLE_HOST_mipsarchn64 = "null"

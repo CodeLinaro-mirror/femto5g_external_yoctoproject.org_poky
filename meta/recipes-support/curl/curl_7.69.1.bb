@@ -55,6 +55,9 @@ SRC_URI = "https://curl.haxx.se/download/curl-${PV}.tar.bz2 \
            file://CVE-2023-32001.patch \
            file://CVE-2023-38545.patch \
            file://CVE-2023-38546.patch \
+           file://CVE-2023-28321.patch \
+           file://CVE-2023-28322.patch \
+           file://CVE-2023-46218.patch \
 "
 
 SRC_URI[md5sum] = "ec5fc263f898a3dfef08e805f1ecca42"
@@ -68,6 +71,9 @@ CVE_CHECK_WHITELIST = "CVE-2021-22922 CVE-2021-22923 CVE-2021-22926 CVE-2021-229
 # and https://ubuntu.com/security/CVE-2021-22897
 # This CVE issue affects Windows only Hence whitelisting this CVE
 CVE_CHECK_WHITELIST += "CVE-2021-22897"
+
+# This CVE reports that apple had to upgrade curl because of other already reported CVEs
+CVE_CHECK_WHITELIST += "CVE-2023-42915"
 
 inherit autotools pkgconfig binconfig multilib_header
 
