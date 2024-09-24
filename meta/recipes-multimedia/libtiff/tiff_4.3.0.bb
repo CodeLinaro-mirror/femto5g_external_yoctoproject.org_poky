@@ -32,6 +32,27 @@ SRC_URI = "http://download.osgeo.org/libtiff/tiff-${PV}.tar.gz \
            file://0001-tiffcrop-S-option-Make-decision-simpler.patch \
            file://0001-tiffcrop-disable-incompatibility-of-Z-X-Y-z-options-.patch \
            file://0001-tiffcrop-subroutines-require-a-larger-buffer-fixes-2.patch \
+           file://CVE-2022-48281.patch \
+           file://CVE-2023-0800_0801_0802_0803_0804.patch \
+           file://CVE-2023-0795_0796_0797_0798_0799.patch \
+           file://CVE-2023-25433.patch \
+           file://CVE-2023-25434-CVE-2023-25435.patch \
+           file://CVE-2023-26965.patch \
+           file://CVE-2023-2908.patch \
+           file://CVE-2023-3316.patch \
+           file://CVE-2023-3576.patch \
+           file://CVE-2023-3618.patch \
+           file://CVE-2023-26966.patch \
+           file://CVE-2022-40090.patch \
+           file://CVE-2023-1916.patch \
+           file://CVE-2023-40745.patch \
+           file://CVE-2023-41175.patch \
+           file://CVE-2023-6228.patch \
+           file://CVE-2023-52356.patch \
+           file://CVE-2023-6277-1.patch \
+           file://CVE-2023-6277-2.patch \
+           file://CVE-2023-6277-3.patch \
+           file://CVE-2023-6277-4.patch \
            "
 
 SRC_URI[sha256sum] = "0e46e5acb087ce7d1ac53cf4f56a09b221537fc86dfc5daaad1c2e89e1b37ac8"

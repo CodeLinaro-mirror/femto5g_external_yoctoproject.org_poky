@@ -35,8 +35,6 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2021-4206.patch \
            file://CVE-2021-4207.patch \
            file://CVE-2022-35414.patch \
-           file://CVE-2021-3507_1.patch \
-           file://CVE-2021-3507_2.patch \
            file://CVE-2021-3929.patch \
            file://CVE-2021-4158.patch \
            file://CVE-2022-0358.patch \
@@ -93,6 +91,24 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://0021-target-ppc-implement-xs-n-maddqp-o-xs-n-msubqp-o.patch \
            file://CVE-2022-3165.patch \
            file://CVE-2022-4144.patch \
+           file://0001-hw-display-qxl-Have-qxl_log_command-Return-early-if-.patch \
+           file://0001-hw-display-qxl-Pass-requested-buffer-size-to-qxl_phy.patch \
+           file://CVE-2023-0330.patch \
+           file://CVE-2023-3301.patch \
+           file://CVE-2023-3255.patch \
+           file://CVE-2023-2861.patch \
+	   file://CVE-2020-14394.patch \
+	   file://CVE-2023-3354.patch \
+	   file://CVE-2023-3180.patch \
+	   file://CVE-2021-3638.patch \
+	   file://CVE-2023-1544.patch \
+	   file://CVE-2023-5088.patch \
+	   file://CVE-2024-24474.patch \
+	   file://CVE-2023-6693.patch \
+           file://scsi-disk-allow-MODE-SELECT-block-desriptor-to-set-the-block-size.patch \
+           file://scsi-disk-ensure-block-size-is-non-zero-and-changes-limited-to-bits-8-15.patch \
+           file://CVE-2023-42467.patch \
+           file://CVE-2023-6683.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -111,6 +127,15 @@ CVE_CHECK_IGNORE += "CVE-2007-0998"
 # 'The issues identified by this CVE were determined to not constitute a vulnerability.'
 # https://bugzilla.redhat.com/show_bug.cgi?id=1609015#c11
 CVE_CHECK_IGNORE += "CVE-2018-18438"
+
+# As per https://nvd.nist.gov/vuln/detail/CVE-2023-0664
+# https://bugzilla.redhat.com/show_bug.cgi?id=2167423
+# this bug related to windows specific.
+CVE_CHECK_IGNORE += "CVE-2023-0664"
+
+# As per https://bugzilla.redhat.com/show_bug.cgi?id=2203387
+# RHEL specific issue
+CVE_CHECK_IGNORE += "CVE-2023-2680"
 
 COMPATIBLE_HOST:mipsarchn32 = "null"
 COMPATIBLE_HOST:mipsarchn64 = "null"

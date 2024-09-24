@@ -62,6 +62,10 @@ python () {
         else:
             d.setVar('B', '${WORKDIR}/${BPN}-${PV}')
 
+        if d.getVar('SRCREV', "INVALID") != "INVALID":
+            # Ensure SRCREV has been processed before accessing SRC_URI
+            bb.fetch.get_srcrev(d)
+
         local_srcuri = []
         fetch = bb.fetch2.Fetch((d.getVar('SRC_URI') or '').split(), d)
         for url in fetch.urls:
@@ -76,6 +80,8 @@ python () {
 
         # Dummy value because the default function can't be called with blank SRC_URI
         d.setVar('SRCPV', '999')
+        # sstate is never going to work for external source trees, disable it
+        d.setVar('SSTATE_SKIP_CREATION', '1')
 
         if d.getVar('CONFIGUREOPT_DEPTRACK') == '--disable-dependency-tracking':
             d.setVar('CONFIGUREOPT_DEPTRACK', '')
@@ -83,10 +89,7 @@ python () {
         tasks = filter(lambda k: d.getVarFlag(k, "task"), d.keys())
 
         for task in tasks:
-            if task.endswith("_setscene"):
-                # sstate is never going to work for external source trees, disable it
-                bb.build.deltask(task, d)
-            elif os.path.realpath(d.getVar('S')) == os.path.realpath(d.getVar('B')):
+            if os.path.realpath(d.getVar('S')) == os.path.realpath(d.getVar('B')):
                 # Since configure will likely touch ${S}, ensure only we lock so one task has access at a time
                 d.appendVarFlag(task, "lockfiles", " ${S}/singletask.lock")
 
@@ -229,7 +232,7 @@ def srctree_hash_files(d, srcdir=None):
             env['GIT_INDEX_FILE'] = tmp_index.name
             subprocess.check_output(['git', 'add', '-A', '.'], cwd=s_dir, env=env)
             git_sha1 = subprocess.check_output(['git', 'write-tree'], cwd=s_dir, env=env).decode("utf-8")
-            if os.path.exists(os.path.join(s_dir, ".gitmodules")):
+            if os.path.exists(os.path.join(s_dir, ".gitmodules")) and os.path.getsize(os.path.join(s_dir, ".gitmodules")) > 0:
                 submodule_helper = subprocess.check_output(["git", "config", "--file", ".gitmodules", "--get-regexp", "path"], cwd=s_dir, env=env).decode("utf-8")
                 for line in submodule_helper.splitlines():
                     module_dir = os.path.join(s_dir, line.rsplit(maxsplit=1)[1])

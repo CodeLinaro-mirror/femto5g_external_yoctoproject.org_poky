@@ -23,6 +23,8 @@ TARGET_CFLAGS = "${BUILD_CFLAGS}"
 TARGET_CXXFLAGS = "${BUILD_CXXFLAGS}"
 TARGET_LDFLAGS = "${BUILD_LDFLAGS}"
 TARGET_FPU = ""
+TUNE_FEATURES = ""
+ABIEXTENSION = ""
 
 HOST_ARCH = "${BUILD_ARCH}"
 HOST_OS = "${BUILD_OS}"
@@ -153,7 +155,7 @@ python native_virtclass_handler () {
                 newdeps.append(dep.replace(pn, bpn) + "-native")
             else:
                 newdeps.append(dep)
-        d.setVar(varname, " ".join(newdeps), parsing=True)
+        d.setVar(varname, " ".join(newdeps))
 
     map_dependencies("DEPENDS", e.data, selfref=False)
     for pkg in e.data.getVar("PACKAGES", False).split():
