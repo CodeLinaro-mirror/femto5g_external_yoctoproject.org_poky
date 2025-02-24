@@ -135,7 +135,7 @@ system and gives an overview of their function and contents.
       appear in :term:`DISTRO_FEATURES` within the current configuration, then
       the recipe will be skipped, and if the build system attempts to build
       the recipe then an error will be triggered.
-      
+
 
    :term:`APPEND`
       An override list of append strings for each target specified with
@@ -1521,12 +1521,26 @@ system and gives an overview of their function and contents.
          variable only in certain contexts (e.g. when building for kernel
          and kernel module recipes).
 
+   :term:`CVE_CHECK_CREATE_MANIFEST`
+      Specifies whether to create a CVE manifest to place in the deploy
+      directory. The default is "1".
+
    :term:`CVE_CHECK_IGNORE`
       The list of CVE IDs which are ignored. Here is
       an example from the :oe_layerindex:`Python3 recipe</layerindex/recipe/23823>`::
 
          # This is windows only issue.
          CVE_CHECK_IGNORE += "CVE-2020-15523"
+
+   :term:`CVE_CHECK_MANIFEST_JSON`
+      Specifies the path to the CVE manifest in JSON format. See
+      :term:`CVE_CHECK_CREATE_MANIFEST`.
+
+   :term:`CVE_CHECK_REPORT_PATCHED`
+      Specifies whether or not the :ref:`ref-classes-cve-check`
+      class should report patched or ignored CVEs. The default is "1", but you
+      may wish to set it to "0" if you do not need patched or ignored CVEs in
+      the logs.
 
    :term:`CVE_CHECK_SHOW_WARNINGS`
       Specifies whether or not the :ref:`cve-check <ref-classes-cve-check>`
@@ -2293,6 +2307,18 @@ system and gives an overview of their function and contents.
       :ref:`kernel-yocto <ref-classes-kernel-yocto>` class in
       ``meta/classes`` to see how the variable is used.
 
+   :term:`EXTERNAL_KERNEL_DEVICETREE`
+      When inheriting :ref:`ref-classes-kernel-fitimage` and a
+      :term:`PREFERRED_PROVIDER` for ``virtual/dtb`` set to ``devicetree``, the
+      variable :term:`EXTERNAL_KERNEL_DEVICETREE` can be used to specify a
+      directory containing one or more compiled device tree or device tree
+      overlays to use.
+
+      Using this variable is only useful when you are using a kernel recipe
+      inheriting the :ref:`ref-classes-kernel` class, and which doesn't
+      already set a local version. Therefore, setting this variable has no
+      impact on ``linux-yocto`` kernels.
+
    :term:`EXTERNAL_TOOLCHAIN`
       When you intend to use an
       :ref:`external toolchain <dev-manual/external-toolchain:optionally using an external toolchain>`,
@@ -2483,8 +2509,8 @@ system and gives an overview of their function and contents.
       .. note::
 
          From a security perspective, hardcoding a default password is not
-         generally a good idea or even legal in some jurisdictions. It is 
-         recommended that you do not do this if you are building a production 
+         generally a good idea or even legal in some jurisdictions. It is
+         recommended that you do not do this if you are building a production
          image.
 
       Additionally there is a special ``passwd-expire`` command that will
@@ -5359,6 +5385,13 @@ system and gives an overview of their function and contents.
       default by setting the variable in a custom distribution
       configuration file.
 
+   :term:`OPKGBUILDCMD`
+      The variable :term:`OPKGBUILDCMD` specifies the command used to build opkg
+      packages when using the :ref:`ref-classes-package_ipk` class. It is
+      defined in :ref:`ref-classes-package_ipk` as::
+
+          OPKGBUILDCMD ??= 'opkg-build -Z zstd -a "${ZSTD_DEFAULTS}"'
+
    :term:`OVERRIDES`
       A colon-separated list of overrides that currently apply. Overrides
       are a BitBake mechanism that allows variables to be selectively
@@ -7340,6 +7373,50 @@ system and gives an overview of their function and contents.
          might break at runtime if the interface of the recipe was changed
          after the other had been built.
 
+   :term:`SIGGEN_LOCKEDSIGS`
+     The list of locked tasks, with the form::
+
+       SIGGEN_LOCKEDSIGS += "<package>:<task>:<signature>"
+
+     If ``<signature>`` exists for the specified ``<task>`` and ``<package>``
+     in the sstate cache, BitBake will use the cached output instead of
+     rebuilding the ``<task>``. If it does not exist, BitBake will build the
+     ``<task>`` and the sstate cache will be used next time.
+
+     Example::
+
+       SIGGEN_LOCKEDSIGS += "bc:do_compile:09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0"
+
+     You can obtain the signature of all the tasks for the recipe ``bc`` using::
+
+       bitbake -S none bc
+
+     Then you can look at files in ``build/tmp/stamps/<arch>/bc`` and look for
+     files like: ``<PV>.do_compile.sigdata.09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0``.
+
+   :term:`SIGGEN_LOCKEDSIGS_TASKSIG_CHECK`
+     Specifies the debug level of task signature check. 3 levels are supported:
+
+     * ``info``: displays a "Note" message to remind the user that a task is locked
+       and the current signature matches the locked one.
+     * ``warn``: displays a "Warning" message if a task is locked and the current
+       signature does not match the locked one.
+     * ``error``: same as warn but displays an "Error" message and aborts.
+
+   :term:`SIGGEN_LOCKEDSIGS_TYPES`
+     Allowed overrides for :term:`SIGGEN_LOCKEDSIGS`. This is mainly used
+     for architecture specific locks. A common value for
+     :term:`SIGGEN_LOCKEDSIGS_TYPES` is ``${PACKAGE_ARCHS}``::
+
+       SIGGEN_LOCKEDSIGS_TYPES += "${PACKAGE_ARCHS}"
+
+       SIGGEN_LOCKEDSIGS_core2-64 += "bc:do_compile:09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0"
+       SIGGEN_LOCKEDSIGS_cortexa57 += "bc:do_compile:12178eb6d55ef602a8fe638e49862fd247e07b228f0f08967697b655bfe4bb61"
+
+     Here, the ``do_compile`` task from ``bc`` will be locked only for
+     ``core2-64`` and ``cortexa57`` but not for other architectures such as
+     ``mips32r2``.
+
    :term:`SITEINFO_BITS`
       Specifies the number of bits for the target system CPU. The value
       should be either "32" or "64".
@@ -8123,6 +8200,35 @@ system and gives an overview of their function and contents.
              /sysroot-only \
              "
 
+      Consider the following example in which you need to manipulate this variable.
+      Assume you have a recipe ``A`` that provides a shared library ``.so.*`` that is
+      installed into a custom folder other than "``${libdir}``"
+      or "``${base_libdir}``", let's say "``/opt/lib``".
+
+      .. note::
+
+         This is not a recommended way to deal with shared libraries, but this
+         is just to show the usefulness of setting :term:`SYSROOT_DIRS`.
+
+      When a recipe ``B`` :term:`DEPENDS` on ``A``, it means what is in
+      :term:`SYSROOT_DIRS` will be copied from :term:`D` of the recipe ``A``
+      into ``B``'s :term:`SYSROOT_DESTDIR` that is "``${WORKDIR}/sysroot-destdir``".
+
+      Now, since ``/opt/lib`` is not in :term:`SYSROOT_DIRS`, it will never be copied to
+      ``A``'s :term:`RECIPE_SYSROOT`, which is "``${WORKDIR}/recipe-sysroot``". So,
+      the linking process will fail.
+
+      To fix this, you need to add ``/opt/lib`` to :term:`SYSROOT_DIRS`::
+
+         SYSROOT_DIRS:append = " /opt/lib"
+
+      .. note::
+         Even after setting ``/opt/lib`` to :term:`SYSROOT_DIRS`, the linking process will still fail
+         because the linker does not know that location, since :term:`TARGET_LDFLAGS`
+         doesn't contain it (if your recipe is for the target). Therefore, so you should add::
+
+            TARGET_LDFLAGS:append = " -L${RECIPE_SYSROOT}/opt/lib"
+
    :term:`SYSROOT_DIRS_IGNORE`
       Directories that are not staged into the sysroot by the
       :ref:`ref-tasks-populate_sysroot` task. You
@@ -8145,35 +8251,6 @@ system and gives an overview of their function and contents.
              ${datadir}/terminfo \
              ${libdir}/${BPN}/ptest \
              "
-
-      Consider the following example in which you need to manipulate this variable.
-      Assume you have a recipe ``A`` that provides a shared library ``.so.*`` that is
-      installed into a custom folder other than "``${libdir}``"
-      or "``${base_libdir}``", let's say "``/opt/lib``".
-
-      .. note::
-
-         This is not a recommended way to deal with shared libraries, but this
-         is just to show the usefulness of setting :term:`SYSROOT_DIRS`.
-
-      When a recipe ``B`` :term:`DEPENDS` on ``A``, it means what is in
-      :term:`SYSROOT_DIRS` will be copied from :term:`D` of the recipe ``B``
-      into ``B``'s :term:`SYSROOT_DESTDIR` that is "``${WORKDIR}/sysroot-destdir``".
-
-      Now, since ``/opt/lib`` is not in :term:`SYSROOT_DIRS`, it will never be copied to
-      ``A``'s :term:`RECIPE_SYSROOT`, which is "``${WORKDIR}/recipe-sysroot``". So,
-      the linking process will fail.
-
-      To fix this, you need to add ``/opt/lib`` to :term:`SYSROOT_DIRS`::
-
-         SYSROOT_DIRS:append = " /opt/lib"
-
-      .. note::
-         Even after setting ``/opt/lib`` to :term:`SYSROOT_DIRS`, the linking process will still fail
-         because the linker does not know that location, since :term:`TARGET_LDFLAGS`
-         doesn't contain it (if your recipe is for the target). Therefore, so you should add::
-
-            TARGET_LDFLAGS:append = " -L${RECIPE_SYSROOT}/opt/lib"
 
    :term:`SYSROOT_DIRS_NATIVE`
       Extra directories staged into the sysroot by the
@@ -9548,4 +9625,3 @@ system and gives an overview of their function and contents.
 
       On systems where many tasks run in parallel, setting a limit to this
       can be helpful in controlling system resource usage.
-

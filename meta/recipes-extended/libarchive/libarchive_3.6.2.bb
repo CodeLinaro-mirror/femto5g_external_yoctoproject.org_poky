@@ -31,6 +31,8 @@ EXTRA_OECONF += "--enable-largefile --without-iconv"
 SRC_URI = "http://libarchive.org/downloads/libarchive-${PV}.tar.gz \
            file://0001-pax-writer-fix-multiple-security-vulnerabilities.patch \
            file://CVE-2024-26256.patch \
+           file://CVE-2024-48957.patch \
+           file://CVE-2024-48958.patch \
            "
 UPSTREAM_CHECK_URI = "http://libarchive.org/"
 
@@ -38,6 +40,8 @@ SRC_URI[sha256sum] = "ba6d02f15ba04aba9c23fd5f236bb234eab9d5209e95d1c4df85c44d5f
 
 # upstream-wontfix: upstream has documented that reported function is not thread-safe
 CVE_CHECK_IGNORE += "CVE-2023-30571"
+# cpe-incorrect: this vulnerability was not in any release; introduced in v3.7.3-14-g91f27004; fixed in b6a97948
+CVE_CHECK_IGNORE += "CVE-2024-37407"
 
 inherit autotools update-alternatives pkgconfig
 
