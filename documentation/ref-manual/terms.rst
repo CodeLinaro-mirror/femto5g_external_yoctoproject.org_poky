@@ -4,7 +4,7 @@
 Yocto Project Terms
 *******************
 
-Following is a list of terms and definitions users new to the Yocto Project
+Here is a list of terms and definitions users new to the Yocto Project
 development environment might find helpful. While some of these terms are
 universal, the list includes them just in case:
 
@@ -66,8 +66,8 @@ universal, the list includes them just in case:
       (i.e. :ref:`ref-manual/structure:\`\`oe-init-build-env\`\``). The
       :term:`TOPDIR` variable points to the Build Directory.
 
-      You have a lot of flexibility when creating the Build Directory.
-      Following are some examples that show how to create the directory.  The
+      You have a lot of flexibility when creating the :term:`Build Directory`.
+      Here are some examples that show how to create the directory.  The
       examples assume your :term:`Source Directory` is named ``poky``:
 
          -  Create the Build Directory inside your Source Directory and let
@@ -108,6 +108,24 @@ universal, the list includes them just in case:
       The system used to build images in a Yocto Project Development
       environment. The build system is sometimes referred to as the development
       host.
+
+   :term:`buildtools`
+      Build tools in binary form, providing required versions of development
+      tools (such as Git, GCC, Python and make), to run the OpenEmbedded build
+      system on a development host without such minimum versions.
+
+      See the ":ref:`system-requirements-buildtools`" paragraph in the
+      Reference Manual for details about downloading or building an archive
+      of such tools.
+
+   :term:`buildtools-extended`
+      A set of :term:`buildtools` binaries extended with additional development
+      tools, such as a required version of the GCC compiler to run the
+      OpenEmbedded build system.
+
+   :term:`buildtools-make`
+      A variant of :term:`buildtools`, just providing the required
+      version of ``make`` to run the OpenEmbedded build system.
 
    :term:`Classes`
       Files that provide for logic encapsulation and inheritance so that
@@ -208,23 +226,23 @@ universal, the list includes them just in case:
 
          As far as bootloaders are concerned, :term:`Initramfs` and "initrd"
          images are still copied to RAM in the same way. That's why most
-	 most bootloaders refer to :term:`Initramfs` images as "initrd"
-	 or "init RAM disk".
+         most bootloaders refer to :term:`Initramfs` images as "initrd"
+         or "init RAM disk".
 
       This kind of mechanism is typically used for two reasons:
 
       -  For booting the same kernel binary on multiple systems requiring
          different device drivers. The :term:`Initramfs` image is then customized
-	 for each type of system, to include the specific kernel modules
+         for each type of system, to include the specific kernel modules
          necessary to access the final root filesystem. This technique
-	 is used on all GNU / Linux distributions for desktops and servers.
+         is used on all GNU / Linux distributions for desktops and servers.
 
       -  For booting faster. As the root filesystem is extracted into RAM,
          accessing the first user-space applications is very fast, compared
          to having to initialize a block device, to access multiple blocks
          from it, and to go through a filesystem having its own overhead.
          For example, this allows to display a splashscreen very early,
-	 and to later take care of mounting the final root filesystem and
+         and to later take care of mounting the final root filesystem and
          loading less time-critical kernel drivers.
 
       This cpio archive can either be loaded to RAM by the bootloader,
@@ -324,7 +342,7 @@ universal, the list includes them just in case:
       your Linux distribution.
 
       Another point worth noting is that historically within the Yocto
-      Project, recipes were referred to as packages - thus, the existence
+      Project, recipes were referred to as packages --- thus, the existence
       of several BitBake variables that are seemingly mis-named, (e.g.
       :term:`PR`, :term:`PV`, and
       :term:`PE`).
@@ -440,7 +458,7 @@ universal, the list includes them just in case:
      Directory created by unpacking a released tarball as compared to
      cloning ``git://git.yoctoproject.org/poky``. When you unpack a
      tarball, you have an exact copy of the files based on the time of
-     release - a fixed release point. Any changes you make to your local
+     release --- a fixed release point. Any changes you make to your local
      files in the Source Directory are on top of the release and will
      remain local only. On the other hand, when you clone the ``poky`` Git
      repository, you have an active development repository with access to
@@ -464,6 +482,31 @@ universal, the list includes them just in case:
       For details, see Wikipedia's :wikipedia:`SPDX page <Software_Package_Data_Exchange>`
       and the ":ref:`dev-manual/sbom:creating a software bill of materials`"
       section of the Development Tasks manual.
+
+   :term:`Sysroot`
+      When cross-compiling, the target file system may be differently laid
+      out and contain different things compared to the host system. The concept
+      of a *sysroot* is directory which looks like the target filesystem and
+      can be used to cross-compile against.
+
+      In the context of cross-compiling toolchains, a *sysroot*
+      typically contains C library and kernel headers, plus the
+      compiled binaries for the C library. A *multilib toolchain*
+      can contain multiple variants of the C library binaries,
+      each compiled for a target instruction set (such as ``armv5``,
+      ``armv7`` and ``armv8``), and possibly optimized for a specific CPU core.
+
+      In the more specific context of the OpenEmbedded build System and
+      of the Yocto Project, each recipe has two sysroots:
+
+      -  A *target sysroot* contains all the **target** libraries and headers
+         needed to build the recipe.
+
+      -  A *native sysroot* contains all the **host** files and executables
+         needed to build the recipe.
+
+      See the :term:`SYSROOT_* <SYSROOT_DESTDIR>` variables controlling
+      how sysroots are created and stored.
 
    :term:`Task`
       A per-recipe unit of execution for BitBake (e.g.

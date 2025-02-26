@@ -135,7 +135,7 @@ system and gives an overview of their function and contents.
       appear in :term:`DISTRO_FEATURES` within the current configuration, then
       the recipe will be skipped, and if the build system attempts to build
       the recipe then an error will be triggered.
-      
+
 
    :term:`APPEND`
       An override list of append strings for each target specified with
@@ -318,7 +318,7 @@ system and gives an overview of their function and contents.
 
    :term:`BB_ALLOWED_NETWORKS`
       Specifies a space-delimited list of hosts that the fetcher is allowed
-      to use to obtain the required source code. Following are
+      to use to obtain the required source code. Here are
       considerations surrounding this variable:
 
       -  This host list is only used if :term:`BB_NO_NETWORK` is either not set
@@ -591,7 +591,7 @@ system and gives an overview of their function and contents.
       This variable is useful in situations where the same recipe appears
       in more than one layer. Setting this variable allows you to
       prioritize a layer against other layers that contain the same recipe
-      - effectively letting you control the precedence for the multiple
+      --- effectively letting you control the precedence for the multiple
       layers. The precedence established through this variable stands
       regardless of a recipe's version (:term:`PV` variable). For
       example, a layer that has a recipe with a higher :term:`PV` value but for
@@ -888,7 +888,7 @@ system and gives an overview of their function and contents.
    :term:`BUILD_OS`
       Specifies the operating system in use on the build host (e.g.
       "linux"). The OpenEmbedded build system sets the value of
-      :term:`BUILD_OS` from the OS reported by the ``uname`` command - the
+      :term:`BUILD_OS` from the OS reported by the ``uname`` command --- the
       first word, converted to lower-case characters.
 
    :term:`BUILD_PREFIX`
@@ -1202,6 +1202,32 @@ system and gives an overview of their function and contents.
       speed since the build system skips parsing recipes not compatible
       with the current machine.
 
+      If one wants to have a recipe only available for some architectures
+      (here ``aarch64`` and ``mips64``), the following can be used::
+
+         COMPATIBLE_MACHINE = "^$"
+         COMPATIBLE_MACHINE:arch64 = "^(aarch64)$"
+         COMPATIBLE_MACHINE:mips64 = "^(mips64)$"
+
+      The first line means "match all machines whose :term:`MACHINEOVERRIDES`
+      contains the empty string", which will always be none.
+
+      The second is for matching all machines whose :term:`MACHINEOVERRIDES`
+      contains one override which is exactly ``aarch64``.
+
+      The third is for matching all machines whose :term:`MACHINEOVERRIDES`
+      contains one override which is exactly ``mips64``.
+
+      The same could be achieved with::
+
+         COMPATIBLE_MACHINE = "^(aarch64|mips64)$"
+
+      .. note::
+
+         When :term:`COMPATIBLE_MACHINE` is set in a recipe inherits from
+         native, the recipe is always skipped. All native recipes must be
+         entirely target independent and should not rely on :term:`MACHINE`.
+
    :term:`COMPLEMENTARY_GLOB`
       Defines wildcards to match when installing a list of complementary
       packages for all the packages explicitly (or implicitly) installed in
@@ -1315,6 +1341,19 @@ system and gives an overview of their function and contents.
       appears in :term:`DISTRO_FEATURES` within the current configuration, then
       the recipe will be skipped, and if the build system attempts to build
       the recipe then an error will be triggered.
+
+   :term:`CONVERSION_CMD`
+      This variable is used for storing image conversion commands.
+      Image conversion can convert an image into different objects like:
+
+      -   Compressed version of the image
+
+      -   Checksums for the image
+
+      An example of :term:`CONVERSION_CMD` from :ref:`image-types
+      <ref-classes-image_types>` class is::
+
+         CONVERSION_CMD:lzo = "lzop -9 ${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${type}"
 
    :term:`COPY_LIC_DIRS`
       If set to "1" along with the
@@ -1482,12 +1521,26 @@ system and gives an overview of their function and contents.
          variable only in certain contexts (e.g. when building for kernel
          and kernel module recipes).
 
+   :term:`CVE_CHECK_CREATE_MANIFEST`
+      Specifies whether to create a CVE manifest to place in the deploy
+      directory. The default is "1".
+
    :term:`CVE_CHECK_IGNORE`
       The list of CVE IDs which are ignored. Here is
       an example from the :oe_layerindex:`Python3 recipe</layerindex/recipe/23823>`::
 
          # This is windows only issue.
          CVE_CHECK_IGNORE += "CVE-2020-15523"
+
+   :term:`CVE_CHECK_MANIFEST_JSON`
+      Specifies the path to the CVE manifest in JSON format. See
+      :term:`CVE_CHECK_CREATE_MANIFEST`.
+
+   :term:`CVE_CHECK_REPORT_PATCHED`
+      Specifies whether or not the :ref:`ref-classes-cve-check`
+      class should report patched or ignored CVEs. The default is "1", but you
+      may wish to set it to "0" if you do not need patched or ignored CVEs in
+      the logs.
 
    :term:`CVE_CHECK_SHOW_WARNINGS`
       Specifies whether or not the :ref:`cve-check <ref-classes-cve-check>`
@@ -1736,7 +1789,7 @@ system and gives an overview of their function and contents.
       ``${TMPDIR}/deploy``.
 
       For more information on the structure of the Build Directory, see
-      ":ref:`ref-manual/structure:the build directory - \`\`build/\`\``" section.
+      ":ref:`ref-manual/structure:the build directory --- \`\`build/\`\``" section.
       For more detail on the contents of the ``deploy`` directory, see the
       ":ref:`overview-manual/concepts:images`",
       ":ref:`overview-manual/concepts:package feeds`", and
@@ -1780,7 +1833,7 @@ system and gives an overview of their function and contents.
       <ref-classes-image>` class.
 
       For more information on the structure of the Build Directory, see
-      ":ref:`ref-manual/structure:the build directory - \`\`build/\`\``" section.
+      ":ref:`ref-manual/structure:the build directory --- \`\`build/\`\``" section.
       For more detail on the contents of the ``deploy`` directory, see the
       ":ref:`overview-manual/concepts:images`" and
       ":ref:`overview-manual/concepts:application development sdk`" sections both in
@@ -2068,12 +2121,24 @@ system and gives an overview of their function and contents.
    :term:`DOC_COMPRESS`
       When inheriting the :ref:`compress_doc <ref-classes-compress_doc>`
       class, this variable sets the compression policy used when the
-      OpenEmbedded build system compresses man pages and info pages. By
+      OpenEmbedded build system compresses manual and info pages. By
       default, the compression method used is gz (gzip). Other policies
       available are xz and bz2.
 
       For information on policies and on how to use this variable, see the
       comments in the ``meta/classes/compress_doc.bbclass`` file.
+
+   :term:`DT_FILES_PATH`
+      When compiling out-of-tree device tree sources using a recipe that
+      inherits the :ref:`ref-classes-devicetree` class, this variable specifies
+      the path to the directory containing dts files to build.
+
+      Defaults to the :term:`S` directory.
+
+   :term:`DT_PADDING_SIZE`
+      When inheriting the :ref:`ref-classes-devicetree` class, this variable
+      specifies the size of padding appended to the device tree blob, used as
+      extra space typically for additional properties during boot.
 
    :term:`EFI_PROVIDER`
       When building bootable images (i.e. where ``hddimg``, ``iso``, or
@@ -2242,6 +2307,18 @@ system and gives an overview of their function and contents.
       :ref:`kernel-yocto <ref-classes-kernel-yocto>` class in
       ``meta/classes`` to see how the variable is used.
 
+   :term:`EXTERNAL_KERNEL_DEVICETREE`
+      When inheriting :ref:`ref-classes-kernel-fitimage` and a
+      :term:`PREFERRED_PROVIDER` for ``virtual/dtb`` set to ``devicetree``, the
+      variable :term:`EXTERNAL_KERNEL_DEVICETREE` can be used to specify a
+      directory containing one or more compiled device tree or device tree
+      overlays to use.
+
+      Using this variable is only useful when you are using a kernel recipe
+      inheriting the :ref:`ref-classes-kernel` class, and which doesn't
+      already set a local version. Therefore, setting this variable has no
+      impact on ``linux-yocto`` kernels.
+
    :term:`EXTERNAL_TOOLCHAIN`
       When you intend to use an
       :ref:`external toolchain <dev-manual/external-toolchain:optionally using an external toolchain>`,
@@ -2297,24 +2374,24 @@ system and gives an overview of their function and contents.
 
       Here are some examples of features you can add:
 
-        - "dbg-pkgs" - Adds -dbg packages for all installed packages including
+        - "dbg-pkgs" --- adds -dbg packages for all installed packages including
           symbol information for debugging and profiling.
 
-        - "debug-tweaks" - Makes an image suitable for debugging. For example, allows root logins without passwords and
+        - "debug-tweaks" --- makes an image suitable for debugging. For example, allows root logins without passwords and
           enables post-installation logging. See the 'allow-empty-password' and
           'post-install-logging' features in the ":ref:`ref-features-image`"
           section for more information.
-        - "dev-pkgs" - Adds -dev packages for all installed packages. This is
+        - "dev-pkgs" --- adds -dev packages for all installed packages. This is
           useful if you want to develop against the libraries in the image.
-        - "read-only-rootfs" - Creates an image whose root filesystem is
+        - "read-only-rootfs" --- creates an image whose root filesystem is
           read-only. See the
           ":ref:`dev-manual/read-only-rootfs:creating a read-only root filesystem`"
           section in the Yocto Project Development Tasks Manual for more
           information
-        - "tools-debug" - Adds debugging tools such as gdb and strace.
-        - "tools-sdk" - Adds development tools such as gcc, make,
+        - "tools-debug" --- adds debugging tools such as gdb and strace.
+        - "tools-sdk" --- adds development tools such as gcc, make,
           pkgconfig and so forth.
-        - "tools-testapps" - Adds useful testing tools
+        - "tools-testapps" --- adds useful testing tools
           such as ts_print, aplay, arecord and so forth.
 
       For a complete list of image features that ships with the Yocto
@@ -2432,8 +2509,8 @@ system and gives an overview of their function and contents.
       .. note::
 
          From a security perspective, hardcoding a default password is not
-         generally a good idea or even legal in some jurisdictions. It is 
-         recommended that you do not do this if you are building a production 
+         generally a good idea or even legal in some jurisdictions. It is
+         recommended that you do not do this if you are building a production
          image.
 
       Additionally there is a special ``passwd-expire`` command that will
@@ -2834,6 +2911,73 @@ system and gives an overview of their function and contents.
 
          GLIBC_GENERATE_LOCALES = "en_GB.UTF-8 en_US.UTF-8"
 
+   :term:`GO_IMPORT`
+      When inheriting the :ref:`ref-classes-go` class, this mandatory variable
+      sets the import path for the Go package that will be created for the code
+      to build. If you have a ``go.mod`` file in the source directory, this
+      typically matches the path in the ``module`` line in this file.
+
+      Other Go programs importing this package will use this path.
+
+      Here is an example setting from the
+      :yocto_git:`go-helloworld_0.1.bb </poky/tree/meta/recipes-extended/go-examples/go-helloworld_0.1.bb>`
+      recipe::
+
+          GO_IMPORT = "golang.org/x/example"
+
+   :term:`GO_INSTALL`
+      When inheriting the :ref:`ref-classes-go` class, this optional variable
+      specifies which packages in the sources should be compiled and
+      installed in the Go build space by the
+      `go install <https://go.dev/ref/mod#go-install>`__ command.
+
+      Here is an example setting from the
+      :oe_git:`crucible </meta-openembedded/tree/meta-oe/recipes-support/crucible/>`
+      recipe::
+
+         GO_INSTALL = "\
+             ${GO_IMPORT}/cmd/crucible \
+             ${GO_IMPORT}/cmd/habtool \
+         "
+
+      By default, :term:`GO_INSTALL` is defined as::
+
+         GO_INSTALL ?= "${GO_IMPORT}/..."
+
+      The ``...`` wildcard means that it will catch all
+      packages found in the sources.
+
+      See the :term:`GO_INSTALL_FILTEROUT` variable for
+      filtering out unwanted packages from the ones
+      found from the :term:`GO_INSTALL` value.
+
+   :term:`GO_INSTALL_FILTEROUT`
+      When using the Go "vendor" mechanism to bring in dependencies for a Go
+      package, the default :term:`GO_INSTALL` setting, which uses the ``...``
+      wildcard, will include the vendored packages in the build, which produces
+      incorrect results.
+
+      There are also some Go packages that are structured poorly, so that the
+      ``...`` wildcard results in building example or test code that should not
+      be included in the build, or could fail to build.
+
+      This optional variable allows for filtering out a subset of the sources.
+      It defaults to excluding everything under the ``vendor`` subdirectory
+      under package's main directory. This is the normal location for vendored
+      packages, but it can be overridden by a recipe to filter out other
+      subdirectories if needed.
+
+   :term:`GO_WORKDIR`
+      When using Go Modules, the current working directory must be the directory
+      containing the ``go.mod`` file, or one of its subdirectories. When the
+      ``go`` tool is used, it will automatically look for the ``go.mod`` file
+      in the Go working directory or in any parent directory, but not in
+      subdirectories.
+
+      When using the :ref:`ref-classes-go-mod` class to use Go modules,
+      the optional :term:`GO_WORKDIR` variable, defaulting to the value
+      of :term:`GO_IMPORT`, allows to specify a different Go working directory.
+
    :term:`GROUPADD_PARAM`
       When inheriting the :ref:`useradd <ref-classes-useradd>` class,
       this variable specifies for a package what parameters should be
@@ -2843,6 +2987,14 @@ system and gives an overview of their function and contents.
       Here is an example from the ``dbus`` recipe::
 
          GROUPADD_PARAM:${PN} = "-r netdev"
+
+      More than one group can be added by separating each set of different
+      groups' parameters with a semicolon.
+
+      Here is an example adding multiple groups from the ``useradd-example.bb``
+      file in the ``meta-skeleton`` layer::
+
+         GROUPADD_PARAM:${PN} = "-g 880 group1; -g 890 group2"
 
       For information on the standard Linux shell command
       ``groupadd``, see https://linux.die.net/man/8/groupadd.
@@ -3102,17 +3254,23 @@ system and gives an overview of their function and contents.
       material for Wic is located in the
       ":doc:`/ref-manual/kickstart`" chapter.
 
+   :term:`IMAGE_BUILDINFO_FILE`
+      When using the :ref:`ref-classes-image-buildinfo` class,
+      specifies the file in the image to write the build information into. The
+      default value is "``${sysconfdir}/buildinfo``".
+
+   :term:`IMAGE_BUILDINFO_VARS`
+      When using the :ref:`ref-classes-image-buildinfo` class,
+      specifies the list of variables to include in the `Build Configuration`
+      section of the output file (as a space-separated list). Defaults to
+      ":term:`DISTRO` :term:`DISTRO_VERSION`".
+
    :term:`IMAGE_CLASSES`
-      A list of classes that all images should inherit. You typically use
-      this variable to specify the list of classes that register the
-      different types of images the OpenEmbedded build system creates.
+      A list of classes that all images should inherit. This is typically used
+      to enable functionality across all image recipes.
 
-      The default value for :term:`IMAGE_CLASSES` is ``image_types``. You can
-      set this variable in your ``local.conf`` or in a distribution
-      configuration file.
-
-      For more information, see ``meta/classes/image_types.bbclass`` in the
-      :term:`Source Directory`.
+      Classes specified in :term:`IMAGE_CLASSES` must be located in the
+      ``classes-recipe/`` or ``classes/`` subdirectories.
 
    :term:`IMAGE_CMD`
       Specifies the command to create the image file for a specific image
@@ -3322,7 +3480,7 @@ system and gives an overview of their function and contents.
          IMAGE_NAME ?= "${IMAGE_BASENAME}-${MACHINE}${IMAGE_VERSION_SUFFIX}"
 
    :term:`IMAGE_NAME_SUFFIX`
-      Suffix used for the image output filename - defaults to ``".rootfs"``
+      Suffix used for the image output filename --- defaults to ``".rootfs"``
       to distinguish the image file from other files created during image
       building; however if this suffix is redundant or not desired you can
       clear the value of this variable (set the value to ""). For example,
@@ -3636,7 +3794,7 @@ system and gives an overview of their function and contents.
       The default value of the variable is set as follows in the
       ``meta/conf/distro/defaultsetup.conf`` file::
 
-         INHERIT_DISTRO ?= "debian devshell sstate license"
+         INHERIT_DISTRO ?= "debian devshell sstate license remove-libtool"
 
    :term:`INHIBIT_DEFAULT_DEPS`
       Prevents the default dependencies, namely the C compiler and standard
@@ -3693,6 +3851,21 @@ system and gives an overview of their function and contents.
          bare-metal firmware by using an external GCC toolchain. Furthermore,
          even if the toolchain's binaries are strippable, there are other files
          needed for the build that are not strippable.
+
+   :term:`INIT_MANAGER`
+      Specifies the system init manager to use. Available options are:
+
+      -  ``sysvinit`` - System V init (default for poky)
+      -  ``systemd`` - systemd
+      -  ``mdev-busybox`` - mdev provided by busybox
+      -  ``none`` - no init manager
+
+      More concretely, this is used to include
+      ``conf/distro/include/init-manager-${INIT_MANAGER}.inc`` into the global
+      configuration. You can have a look at the ``conf/distro/include/init-manager-*.inc``
+      files for more information, and also the
+      ":ref:`dev-manual/init-manager:selecting an initialization manager`"
+      section in the Yocto Project Development Tasks Manual.
 
    :term:`INITRAMFS_DEPLOY_DIR_IMAGE`
       Indicates the deploy directory used by ``do_bundle_initramfs`` where the
@@ -3936,7 +4109,7 @@ system and gives an overview of their function and contents.
 
       Values for this variable are set in the kernel's recipe file and the
       kernel's append file. For example, if you are using the
-      ``linux-yocto_4.12`` kernel, the kernel recipe file is the
+      ``linux-yocto_5.15`` kernel, the kernel recipe file is the
       ``meta/recipes-kernel/linux/linux-yocto_4.12.bb`` file. :term:`KBRANCH`
       is set as follows in that kernel recipe file::
 
@@ -3949,13 +4122,13 @@ system and gives an overview of their function and contents.
       BSP layer for a given machine. For example, the append file for the
       Beaglebone, EdgeRouter, and generic versions of both 32 and 64-bit IA
       machines (``meta-yocto-bsp``) is named
-      ``meta-yocto-bsp/recipes-kernel/linux/linux-yocto_4.12.bbappend``.
+      ``meta-yocto-bsp/recipes-kernel/linux/linux-yocto_4.15.bbappend``.
       Here are the related statements from that append file::
 
-         KBRANCH:genericx86 = "standard/base"
-         KBRANCH:genericx86-64 = "standard/base"
-         KBRANCH:edgerouter = "standard/edgerouter"
-         KBRANCH:beaglebone = "standard/beaglebone"
+         KBRANCH:genericx86  = "v5.15/standard/base"
+         KBRANCH:genericx86-64  = "v5.15/standard/base"
+         KBRANCH:edgerouter = "v5.15/standard/edgerouter"
+         KBRANCH:beaglebone-yocto = "v5.15/standard/beaglebone"
 
       The :term:`KBRANCH` statements
       identify the kernel branch to use when building for each supported
@@ -4074,9 +4247,18 @@ system and gives an overview of their function and contents.
          There is legacy support for specifying the full path to the device
          tree. However, providing just the ``.dtb`` file is preferred.
 
-      In order to use this variable, the
-      :ref:`kernel-devicetree <ref-classes-kernel-devicetree>` class must
-      be inherited.
+      In order to use this variable, the :ref:`ref-classes-kernel-devicetree`
+      class must be inherited.
+
+   :term:`KERNEL_DEVICETREE_BUNDLE`
+      When set to "1", this variable allows to bundle the Linux kernel
+      and the Device Tree Binary together in a single file.
+
+      This feature is currently only supported on the "arm" (32 bit)
+      architecture.
+
+      This variable is set to "0" by default by the
+      :ref:`ref-classes-kernel-devicetree` class.
 
    :term:`KERNEL_DTB_LINK_NAME`
       The link name of the kernel device tree binary (DTB). This variable
@@ -4101,10 +4283,25 @@ system and gives an overview of their function and contents.
 
          KERNEL_DTB_NAME ?= "${KERNEL_ARTIFACT_NAME}"
 
-      The value of the :term:`KERNEL_ARTIFACT_NAME`
-      variable, which is set in the same file, has the following value::
+      See :term:`KERNEL_ARTIFACT_NAME` for additional information.
 
-         KERNEL_ARTIFACT_NAME ?= "${PKGE}-${PKGV}-${PKGR}-${MACHINE}${IMAGE_VERSION_SUFFIX}"
+
+   :term:`KERNEL_DTBDEST`
+      This variable, used by the :ref:`ref-classes-kernel-devicetree`
+      class, allows to change the installation directory of the DTB
+      (Device Tree Binary) files.
+
+      It is set by default to "${KERNEL_IMAGEDEST}" by the
+      :ref:`ref-classes-kernel` class.
+
+   :term:`KERNEL_DTBVENDORED`
+      This variable, used by the :ref:`ref-classes-kernel-devicetree`,
+      allows to ignore vendor subdirectories when installing DTB
+      (Device Tree Binary) files, when it is set to "false".
+
+      To keep vendor subdirectories, set this variable to "true".
+
+      It is set by default to "false" by the :ref:`ref-classes-kernel` class.
 
    :term:`KERNEL_DTC_FLAGS`
       Specifies the ``dtc`` flags that are passed to the Linux kernel build
@@ -4219,9 +4416,12 @@ system and gives an overview of their function and contents.
       when building the kernel and is passed to ``make`` as the target to
       build.
 
-      If you want to build an alternate kernel image type in addition to that
-      specified by :term:`KERNEL_IMAGETYPE`, use the :term:`KERNEL_ALT_IMAGETYPE`
-      variable.
+      To build additional kernel image types, use :term:`KERNEL_IMAGETYPES`.
+
+   :term:`KERNEL_IMAGETYPES`
+      Lists additional types of kernel images to build for a device in addition
+      to image type specified in :term:`KERNEL_IMAGETYPE`. Usually set by the
+      machine configuration files.
 
    :term:`KERNEL_MODULE_AUTOLOAD`
       Lists kernel modules that need to be auto-loaded during boot.
@@ -4258,6 +4458,14 @@ system and gives an overview of their function and contents.
       configuration for each of the modules. For information on how to
       provide those module configurations, see the
       :term:`module_conf_* <module_conf>` variable.
+
+   :term:`KERNEL_PACKAGE_NAME`
+      Specifies the base name of the kernel packages, such as "kernel"
+      in the kernel packages such as "kernel-modules", "kernel-image" and
+      "kernel-dbg".
+
+      The default value for this variable is set to "kernel" by the
+      :ref:`ref-classes-kernel` class.
 
    :term:`KERNEL_PATH`
       The location of the kernel sources. This variable is set to the value
@@ -4867,9 +5075,8 @@ system and gives an overview of their function and contents.
       :term:`PREMIRRORS`, the upstream source, and then
       locations specified by :term:`MIRRORS` in that order.
 
-      Assuming your distribution (:term:`DISTRO`) is "poky",
-      the default value for :term:`MIRRORS` is defined in the
-      ``conf/distro/poky.conf`` file in the ``meta-poky`` Git repository.
+      The default value for :term:`MIRRORS` is defined in the
+      ``meta/classes-global/mirrors.bbclass`` file in the core metadata layer.
 
    :term:`MLPREFIX`
       Specifies a prefix has been added to :term:`PN` to create a
@@ -5101,6 +5308,16 @@ system and gives an overview of their function and contents.
       :term:`Source Directory` for details on how this class
       applies these additional sed command arguments.
 
+   :term:`OECMAKE_GENERATOR`
+      A variable for the :ref:`ref-classes-cmake` class, allowing to choose
+      which back-end will be generated by CMake to build an application.
+
+      By default, this variable is set to ``Ninja``, which is faster than GNU
+      make, but if building is broken with Ninja, a recipe can use this
+      variable to use GNU make instead::
+
+         OECMAKE_GENERATOR = "Unix Makefiles"
+
    :term:`OE_IMPORTS`
       An internal variable used to tell the OpenEmbedded build system what
       Python modules to import for every Python function run by the system.
@@ -5144,6 +5361,20 @@ system and gives an overview of their function and contents.
       For additional information on how this variable is used, see the
       initialization script.
 
+   :term:`OEQA_REPRODUCIBLE_TEST_PACKAGE`
+      Set the package manager(s) for build reproducibility testing.
+      See :yocto_git:`reproducible.py </poky/tree/meta/lib/oeqa/selftest/cases/reproducible.py>`
+      and :doc:`/test-manual/reproducible-builds`.
+
+   :term:`OEQA_REPRODUCIBLE_TEST_TARGET`
+      Set build target for build reproducibility testing. By default
+      all available recipes are compiled with "bitbake world", see also :term:`EXCLUDE_FROM_WORLD`
+      and :doc:`/test-manual/reproducible-builds`.
+
+   :term:`OEQA_REPRODUCIBLE_TEST_SSTATE_TARGETS`
+      Set build targets which can be rebuilt using :ref:`shared state <overview-manual/concepts:shared state cache>`
+      when running build reproducibility tests. See :doc:`/test-manual/reproducible-builds`.
+
    :term:`OLDEST_KERNEL`
       Declares the oldest version of the Linux kernel that the produced
       binaries must support. This variable is passed into the build of the
@@ -5153,6 +5384,13 @@ system and gives an overview of their function and contents.
       ``meta/conf/bitbake.conf`` configuration file. You can override this
       default by setting the variable in a custom distribution
       configuration file.
+
+   :term:`OPKGBUILDCMD`
+      The variable :term:`OPKGBUILDCMD` specifies the command used to build opkg
+      packages when using the :ref:`ref-classes-package_ipk` class. It is
+      defined in :ref:`ref-classes-package_ipk` as::
+
+          OPKGBUILDCMD ??= 'opkg-build -Z zstd -a "${ZSTD_DEFAULTS}"'
 
    :term:`OVERRIDES`
       A colon-separated list of overrides that currently apply. Overrides
@@ -5526,25 +5764,23 @@ system and gives an overview of their function and contents.
       omit any argument you like but must retain the separating commas. The
       order is important and specifies the following:
 
-      1. Extra arguments that should be added to the configure script
-         argument list (:term:`EXTRA_OECONF` or
-         :term:`PACKAGECONFIG_CONFARGS`) if
-         the feature is enabled.
+      #. Extra arguments that should be added to :term:`PACKAGECONFIG_CONFARGS`
+         if the feature is enabled.
 
-      2. Extra arguments that should be added to :term:`EXTRA_OECONF` or
-         :term:`PACKAGECONFIG_CONFARGS` if the feature is disabled.
+      #. Extra arguments that should be added to :term:`PACKAGECONFIG_CONFARGS`
+         if the feature is disabled.
 
-      3. Additional build dependencies (:term:`DEPENDS`)
+      #. Additional build dependencies (:term:`DEPENDS`)
          that should be added if the feature is enabled.
 
-      4. Additional runtime dependencies (:term:`RDEPENDS`)
+      #. Additional runtime dependencies (:term:`RDEPENDS`)
          that should be added if the feature is enabled.
 
-      5. Additional runtime recommendations
+      #. Additional runtime recommendations
          (:term:`RRECOMMENDS`) that should be added if
          the feature is enabled.
 
-      6. Any conflicting (that is, mutually exclusive) :term:`PACKAGECONFIG`
+      #. Any conflicting (that is, mutually exclusive) :term:`PACKAGECONFIG`
          settings for this feature.
 
       Consider the following :term:`PACKAGECONFIG` block taken from the
@@ -5590,6 +5826,38 @@ system and gives an overview of their function and contents.
          Or, you can just amend the variable::
 
             PACKAGECONFIG:append:pn-recipename = " f4"
+
+      Consider the following example of a :ref:`ref-classes-cmake` recipe with a systemd service
+      in which :term:`PACKAGECONFIG` is used to transform the systemd service
+      into a feature that can be easily enabled or disabled via :term:`PACKAGECONFIG`::
+
+         example.c
+         example.service
+         CMakeLists.txt
+
+      The ``CMakeLists.txt`` file contains::
+
+         if(WITH_SYSTEMD)
+            install(FILES ${PROJECT_SOURCE_DIR}/example.service DESTINATION /etc/systemd/systemd)
+         endif(WITH_SYSTEMD)
+
+      In order to enable the installation of ``example.service`` we need to
+      ensure that ``-DWITH_SYSTEMD=ON`` is passed to the ``cmake`` command
+      execution.  Recipes that have ``CMakeLists.txt`` generally inherit the
+      :ref:`ref-classes-cmake` class, that runs ``cmake`` with
+      :term:`EXTRA_OECMAKE`, which :term:`PACKAGECONFIG_CONFARGS` will be
+      appended to.  Now, knowing that :term:`PACKAGECONFIG_CONFARGS` is
+      automatically filled with either the first or second element of
+      :term:`PACKAGECONFIG` flag value, the recipe would be like::
+
+         inherit cmake
+         PACKAGECONFIG = "systemd"
+         PACKAGECONFIG[systemd] = "-DWITH_SYSTEMD=ON,-DWITH_SYSTEMD=OFF"
+
+      A side note to this recipe is to check if ``systemd`` is in fact the used :term:`INIT_MANAGER`
+      or not::
+
+         PACKAGECONFIG = "${@'systemd' if d.getVar('INIT_MANAGER') == 'systemd' else ''}"
 
    :term:`PACKAGECONFIG_CONFARGS`
       A space-separated list of configuration options generated from the
@@ -5947,7 +6215,7 @@ system and gives an overview of their function and contents.
       The :term:`PREFERRED_PROVIDER` variable is set with the name (:term:`PN`) of
       the recipe you prefer to provide "virtual/kernel".
 
-      Following are more examples::
+      Here are more examples::
 
          PREFERRED_PROVIDER_virtual/xserver = "xserver-xf86"
          PREFERRED_PROVIDER_virtual/libgl ?= "mesa"
@@ -6033,9 +6301,8 @@ system and gives an overview of their function and contents.
       source, and then locations specified by
       :term:`MIRRORS` in that order.
 
-      Assuming your distribution (:term:`DISTRO`) is "poky",
-      the default value for :term:`PREMIRRORS` is defined in the
-      ``conf/distro/poky.conf`` file in the ``meta-poky`` Git repository.
+      The default value for :term:`PREMIRRORS` is defined in the
+      ``meta/classes-global/mirrors.bbclass`` file in the core metadata layer.
 
       Typically, you could add a specific server for the build system to
       attempt before any others by adding something like the following to
@@ -6130,11 +6397,11 @@ system and gives an overview of their function and contents.
 
       .. note::
 
-         A corresponding mechanism for virtual runtime dependencies
-         (packages) exists. However, the mechanism does not depend on any
-         special functionality beyond ordinary variable assignments. For
-         example, ``VIRTUAL-RUNTIME_dev_manager`` refers to the package of
-         the component that manages the ``/dev`` directory.
+         A corresponding mechanism for virtual runtime dependencies (packages)
+         exists. However, the mechanism does not depend on any special
+         functionality beyond ordinary variable assignments. For example,
+         :term:`VIRTUAL-RUNTIME_dev_manager <VIRTUAL-RUNTIME>` refers to the
+         package of the component that manages the ``/dev`` directory.
 
          Setting the "preferred provider" for runtime dependencies is as
          simple as using the following assignment in a configuration file::
@@ -6307,7 +6574,7 @@ system and gives an overview of their function and contents.
       ``baz``.
 
       The names of the packages you list within :term:`RDEPENDS` must be the
-      names of other packages - they cannot be recipe names. Although
+      names of other packages --- they cannot be recipe names. Although
       package names and recipe names usually match, the important point
       here is that you are providing package names within the :term:`RDEPENDS`
       variable. For an example of the default list of packages created from
@@ -6378,12 +6645,61 @@ system and gives an overview of their function and contents.
       BitBake User Manual for additional information on tasks and
       dependencies.
 
+   :term:`RECIPE_MAINTAINER`
+      This variable defines the name and e-mail address of the maintainer of a
+      recipe. Such information can be used by human users submitted changes,
+      and by automated tools to send notifications, for example about
+      vulnerabilities or source updates.
+
+      The variable can be defined in a global distribution :oe_git:`maintainers.inc
+      </openembedded-core/tree/meta/conf/distro/include/maintainers.inc>` file::
+
+          meta/conf/distro/include/maintainers.inc:RECIPE_MAINTAINER:pn-sysvinit = "Ross Burton <ross.burton@arm.com>"
+
+      It can also be directly defined in a recipe,
+      for example in the ``libgpiod`` one::
+
+          RECIPE_MAINTAINER = "Bartosz Golaszewski <brgl@bgdev.pl>"
+
    :term:`RECIPE_NO_UPDATE_REASON`
       If a recipe should not be replaced by a more recent upstream version,
       putting the reason why in this variable in a recipe allows
       ``devtool check-upgrade-status`` command to display it, as explained
       in the ":ref:`ref-manual/devtool-reference:checking on the upgrade status of a recipe`"
       section.
+
+   :term:`RECIPE_SYSROOT`
+      This variable points to the directory that holds all files populated from
+      recipes specified in :term:`DEPENDS`. As the name indicates,
+      think of this variable as a custom root (``/``) for the recipe that will be
+      used by the compiler in order to find headers and other files needed to complete
+      its job.
+
+      This variable is related to :term:`STAGING_DIR_HOST` or :term:`STAGING_DIR_TARGET`
+      according to the type of the recipe and the build target.
+
+      To better understand this variable, consider the following examples:
+
+      -  For ``#include <header.h>``, ``header.h`` should be in ``"${RECIPE_SYSROOT}/usr/include"``
+
+      -  For ``-lexample``, ``libexample.so`` should be in ``"${RECIPE_SYSROOT}/lib"``
+         or other library sysroot directories.
+
+      The default value is ``"${WORKDIR}/recipe-sysroot"``.
+      Do not modify it.
+
+   :term:`RECIPE_SYSROOT_NATIVE`
+      This is similar to :term:`RECIPE_SYSROOT` but the populated files are from
+      ``-native`` recipes. This allows a recipe built for the target machine to
+      use ``native`` tools.
+
+      This variable is related to :term:`STAGING_DIR_NATIVE`.
+
+      The default value is ``"${WORKDIR}/recipe-sysroot-native"``.
+      Do not modify it.
+
+   :term:`REPODIR`
+      See :term:`bitbake:REPODIR` in the BitBake manual.
 
    :term:`REQUIRED_DISTRO_FEATURES`
       When inheriting the
@@ -6746,13 +7062,16 @@ system and gives an overview of their function and contents.
       :term:`SDK_EXT_TYPE` is set to "full".
 
    :term:`SDK_NAME`
-      The base name for SDK output files. The name is derived from the
-      :term:`DISTRO`, :term:`TCLIBC`,
-      :term:`SDK_ARCH`,
-      :term:`IMAGE_BASENAME`, and
-      :term:`TUNE_PKGARCH` variables::
+      The base name for SDK output files. The default value (as set in
+      ``meta-poky/conf/distro/poky.conf``) is derived from the
+      :term:`DISTRO`,
+      :term:`TCLIBC`,
+      :term:`SDKMACHINE`,
+      :term:`IMAGE_BASENAME`,
+      :term:`TUNE_PKGARCH`, and
+      :term:`MACHINE` variables::
 
-         SDK_NAME = "${DISTRO}-${TCLIBC}-${SDK_ARCH}-${IMAGE_BASENAME}-${TUNE_PKGARCH}"
+         SDK_NAME = "${DISTRO}-${TCLIBC}-${SDKMACHINE}-${IMAGE_BASENAME}-${TUNE_PKGARCH}-${MACHINE}"
 
    :term:`SDK_OS`
       Specifies the operating system for which the SDK will be built. The
@@ -6923,6 +7242,10 @@ system and gives an overview of their function and contents.
          configuration will not take effect.
 
    :term:`SDKPATH`
+      Defines the path used to collect the SDK components and build the
+      installer.
+
+   :term:`SDKPATHINSTALL`
       Defines the path offered to the user for installation of the SDK that
       is generated by the OpenEmbedded build system. The path appears as
       the default location for installing the SDK when you run the SDK's
@@ -6932,7 +7255,7 @@ system and gives an overview of their function and contents.
    :term:`SDKTARGETSYSROOT`
       The full path to the sysroot used for cross-compilation within an SDK
       as it will be when installed into the default
-      :term:`SDKPATH`.
+      :term:`SDKPATHINSTALL`.
 
    :term:`SECTION`
       The section in which packages should be categorized. Package
@@ -7049,6 +7372,50 @@ system and gives an overview of their function and contents.
          If you add an inappropriate variable to this list, the software
          might break at runtime if the interface of the recipe was changed
          after the other had been built.
+
+   :term:`SIGGEN_LOCKEDSIGS`
+     The list of locked tasks, with the form::
+
+       SIGGEN_LOCKEDSIGS += "<package>:<task>:<signature>"
+
+     If ``<signature>`` exists for the specified ``<task>`` and ``<package>``
+     in the sstate cache, BitBake will use the cached output instead of
+     rebuilding the ``<task>``. If it does not exist, BitBake will build the
+     ``<task>`` and the sstate cache will be used next time.
+
+     Example::
+
+       SIGGEN_LOCKEDSIGS += "bc:do_compile:09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0"
+
+     You can obtain the signature of all the tasks for the recipe ``bc`` using::
+
+       bitbake -S none bc
+
+     Then you can look at files in ``build/tmp/stamps/<arch>/bc`` and look for
+     files like: ``<PV>.do_compile.sigdata.09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0``.
+
+   :term:`SIGGEN_LOCKEDSIGS_TASKSIG_CHECK`
+     Specifies the debug level of task signature check. 3 levels are supported:
+
+     * ``info``: displays a "Note" message to remind the user that a task is locked
+       and the current signature matches the locked one.
+     * ``warn``: displays a "Warning" message if a task is locked and the current
+       signature does not match the locked one.
+     * ``error``: same as warn but displays an "Error" message and aborts.
+
+   :term:`SIGGEN_LOCKEDSIGS_TYPES`
+     Allowed overrides for :term:`SIGGEN_LOCKEDSIGS`. This is mainly used
+     for architecture specific locks. A common value for
+     :term:`SIGGEN_LOCKEDSIGS_TYPES` is ``${PACKAGE_ARCHS}``::
+
+       SIGGEN_LOCKEDSIGS_TYPES += "${PACKAGE_ARCHS}"
+
+       SIGGEN_LOCKEDSIGS_core2-64 += "bc:do_compile:09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0"
+       SIGGEN_LOCKEDSIGS_cortexa57 += "bc:do_compile:12178eb6d55ef602a8fe638e49862fd247e07b228f0f08967697b655bfe4bb61"
+
+     Here, the ``do_compile`` task from ``bc`` will be locked only for
+     ``core2-64`` and ``cortexa57`` but not for other architectures such as
+     ``mips32r2``.
 
    :term:`SITEINFO_BITS`
       Specifies the number of bits for the target system CPU. The value
@@ -7231,6 +7598,11 @@ system and gives an overview of their function and contents.
       image), compared to just using the
       :ref:`create-spdx <ref-classes-create-spdx>` class with no option.
 
+   :term:`SPDX_NAMESPACE_PREFIX`
+      This option could be used in order to change the prefix of ``spdxDocument``
+      and the prefix of ``documentNamespace``. It is set by default to
+      ``http://spdx.org/spdxdoc``.
+
    :term:`SPDX_PRETTY`
       This option makes the SPDX output more human-readable, using
       identation and newlines, instead of the default output in a
@@ -7283,6 +7655,38 @@ system and gives an overview of their function and contents.
       section in the Yocto Project Board Support Package Developer's Guide
       for additional information.
 
+   :term:`SPL_MKIMAGE_DTCOPTS`
+      Options for the device tree compiler passed to ``mkimage -D`` feature
+      while creating a FIT image with the :ref:`ref-classes-uboot-sign`
+      class. If :term:`SPL_MKIMAGE_DTCOPTS` is not set then the
+      :ref:`ref-classes-uboot-sign` class will not pass the ``-D`` option
+      to ``mkimage``.
+
+      The default value is set to "" by the :ref:`ref-classes-uboot-config`
+      class.
+
+   :term:`SPL_SIGN_ENABLE`
+      Enable signing of the U-Boot FIT image. The default value is "0".
+      This variable is used by the :ref:`ref-classes-uboot-sign` class.
+
+   :term:`SPL_SIGN_KEYDIR`
+      Location of the directory containing the RSA key and certificate used for
+      signing the U-Boot FIT image, used by the :ref:`ref-classes-uboot-sign`
+      class.
+
+   :term:`SPL_SIGN_KEYNAME`
+      The name of keys used by the :ref:`ref-classes-kernel-fitimage` class
+      for signing U-Boot FIT image stored in the :term:`SPL_SIGN_KEYDIR`
+      directory. If we have for example a ``dev.key`` key and a ``dev.crt``
+      certificate stored in the :term:`SPL_SIGN_KEYDIR` directory, you will
+      have to set :term:`SPL_SIGN_KEYNAME` to ``dev``.
+
+   :term:`SPLASH`
+      This variable, used by the :ref:`ref-classes-image` class, allows
+      to choose splashscreen applications. Set it to the names of packages
+      for such applications to use. This variable is set by default to
+      ``psplash``.
+
    :term:`SPLASH_IMAGES`
       This variable, used by the ``psplash`` recipe, allows to customize
       the default splashscreen image.
@@ -7324,35 +7728,35 @@ system and gives an overview of their function and contents.
 
       There are standard and recipe-specific options. Here are standard ones:
 
-      -  ``apply`` - Whether to apply the patch or not. The default
+      -  ``apply`` --- whether to apply the patch or not. The default
          action is to apply the patch.
 
-      -  ``striplevel`` - Which striplevel to use when applying the
+      -  ``striplevel`` --- which striplevel to use when applying the
          patch. The default level is 1.
 
-      -  ``patchdir`` - Specifies the directory in which the patch should
+      -  ``patchdir`` --- specifies the directory in which the patch should
          be applied. The default is ``${``\ :term:`S`\ ``}``.
 
       Here are options specific to recipes building code from a revision
       control system:
 
-      -  ``mindate`` - Apply the patch only if
+      -  ``mindate`` --- apply the patch only if
          :term:`SRCDATE` is equal to or greater than
          ``mindate``.
 
-      -  ``maxdate`` - Apply the patch only if :term:`SRCDATE` is not later
+      -  ``maxdate`` --- apply the patch only if :term:`SRCDATE` is not later
          than ``maxdate``.
 
-      -  ``minrev`` - Apply the patch only if :term:`SRCREV` is equal to or
+      -  ``minrev`` --- apply the patch only if :term:`SRCREV` is equal to or
          greater than ``minrev``.
 
-      -  ``maxrev`` - Apply the patch only if :term:`SRCREV` is not later
+      -  ``maxrev`` --- apply the patch only if :term:`SRCREV` is not later
          than ``maxrev``.
 
-      -  ``rev`` - Apply the patch only if :term:`SRCREV` is equal to
+      -  ``rev`` --- apply the patch only if :term:`SRCREV` is equal to
          ``rev``.
 
-      -  ``notrev`` - Apply the patch only if :term:`SRCREV` is not equal to
+      -  ``notrev`` --- apply the patch only if :term:`SRCREV` is not equal to
          ``rev``.
 
       .. note::
@@ -7501,6 +7905,16 @@ system and gives an overview of their function and contents.
              file://.* https://someserver.tld/share/sstate/PATH;downloadfilename=PATH \
              file://.* file:///some-local-dir/sstate/PATH"
 
+      The Yocto Project actually shares the cache data objects built by its
+      autobuilder::
+
+         SSTATE_MIRRORS ?= "file://.* http://cdn.jsdelivr.net/yocto/sstate/all/PATH;downloadfilename=PATH"
+
+      As such binary artifacts are built for the generic QEMU machines
+      supported by the various Poky releases, they are less likely to be
+      reusable in real projects building binaries optimized for a specific
+      CPU family.
+
    :term:`SSTATE_SCAN_FILES`
       Controls the list of files the OpenEmbedded build system scans for
       hardcoded installation paths. The variable uses a space-separated
@@ -7619,9 +8033,14 @@ system and gives an overview of their function and contents.
             for ``-native`` recipes, as they make use of host headers and
             libraries.
 
+      Check :term:`RECIPE_SYSROOT` and :term:`RECIPE_SYSROOT_NATIVE`.
+
    :term:`STAGING_DIR_NATIVE`
       Specifies the path to the sysroot directory used when building
       components that run on the build host itself.
+
+      The default value is ``"${RECIPE_SYSROOT_NATIVE}"``,
+      check :term:`RECIPE_SYSROOT_NATIVE`.
 
    :term:`STAGING_DIR_TARGET`
       Specifies the path to the sysroot used for the system for which the
@@ -7780,6 +8199,35 @@ system and gives an overview of their function and contents.
              ${datadir} \
              /sysroot-only \
              "
+
+      Consider the following example in which you need to manipulate this variable.
+      Assume you have a recipe ``A`` that provides a shared library ``.so.*`` that is
+      installed into a custom folder other than "``${libdir}``"
+      or "``${base_libdir}``", let's say "``/opt/lib``".
+
+      .. note::
+
+         This is not a recommended way to deal with shared libraries, but this
+         is just to show the usefulness of setting :term:`SYSROOT_DIRS`.
+
+      When a recipe ``B`` :term:`DEPENDS` on ``A``, it means what is in
+      :term:`SYSROOT_DIRS` will be copied from :term:`D` of the recipe ``A``
+      into ``B``'s :term:`SYSROOT_DESTDIR` that is "``${WORKDIR}/sysroot-destdir``".
+
+      Now, since ``/opt/lib`` is not in :term:`SYSROOT_DIRS`, it will never be copied to
+      ``A``'s :term:`RECIPE_SYSROOT`, which is "``${WORKDIR}/recipe-sysroot``". So,
+      the linking process will fail.
+
+      To fix this, you need to add ``/opt/lib`` to :term:`SYSROOT_DIRS`::
+
+         SYSROOT_DIRS:append = " /opt/lib"
+
+      .. note::
+         Even after setting ``/opt/lib`` to :term:`SYSROOT_DIRS`, the linking process will still fail
+         because the linker does not know that location, since :term:`TARGET_LDFLAGS`
+         doesn't contain it (if your recipe is for the target). Therefore, so you should add::
+
+            TARGET_LDFLAGS:append = " -L${RECIPE_SYSROOT}/opt/lib"
 
    :term:`SYSROOT_DIRS_IGNORE`
       Directories that are not staged into the sysroot by the
@@ -8334,7 +8782,7 @@ system and gives an overview of their function and contents.
       on enabling, running, and writing these tests, see the
       ":ref:`dev-manual/runtime-testing:performing automated runtime testing`"
       section in the Yocto Project Development Tasks Manual and the
-      ":ref:`ref-classes-testimage*`" section.
+      ":ref:`ref-classes-testimage`" section.
 
    :term:`THISDIR`
       The directory in which the file BitBake is currently parsing is
@@ -8398,6 +8846,16 @@ system and gives an overview of their function and contents.
       This variable allows to extend what is installed in the host
       portion of an eSDK. This is similar to :term:`TOOLCHAIN_HOST_TASK`
       applying to SDKs.
+
+   :term:`TOOLCHAIN_OPTIONS`
+      This variable holds extra options passed to the compiler and the linker
+      for non ``-native`` recipes as they have to point to their custom
+      ``sysroot`` folder pointed to by :term:`RECIPE_SYSROOT`::
+
+         TOOLCHAIN_OPTIONS = " --sysroot=${RECIPE_SYSROOT}"
+
+      Native recipes don't need this variable to be set, as they are
+      built for the host machine with the native compiler.
 
    :term:`TOOLCHAIN_OUTPUTNAME`
       This variable defines the name used for the toolchain output. The
@@ -8568,23 +9026,30 @@ system and gives an overview of their function and contents.
       See the machine include files in the :term:`Source Directory`
       for these features.
 
+   :term:`UBOOT_BINARY`
+      Specifies the name of the binary build by U-Boot.
+
    :term:`UBOOT_CONFIG`
-      Configures the :term:`UBOOT_MACHINE` and can
-      also define :term:`IMAGE_FSTYPES` for individual
-      cases.
+      Configures one or more U-Boot configurations to build. Each
+      configuration can define the :term:`UBOOT_MACHINE` and optionally the
+      :term:`IMAGE_FSTYPES` and the :term:`UBOOT_BINARY`.
 
-      Following is an example from the ``meta-fsl-arm`` layer. ::
+      Here is an example from the ``meta-freescale`` layer. ::
 
-         UBOOT_CONFIG ??= "sd"
-         UBOOT_CONFIG[sd] = "mx6qsabreauto_config,sdcard"
-         UBOOT_CONFIG[eimnor] = "mx6qsabreauto_eimnor_config"
-         UBOOT_CONFIG[nand] = "mx6qsabreauto_nand_config,ubifs"
-         UBOOT_CONFIG[spinor] = "mx6qsabreauto_spinor_config"
+         UBOOT_CONFIG ??= "sdcard-ifc-secure-boot sdcard-ifc sdcard-qspi lpuart qspi secure-boot nor"
+         UBOOT_CONFIG[nor] = "ls1021atwr_nor_defconfig"
+         UBOOT_CONFIG[sdcard-ifc] = "ls1021atwr_sdcard_ifc_defconfig,,u-boot-with-spl-pbl.bin"
+         UBOOT_CONFIG[sdcard-qspi] = "ls1021atwr_sdcard_qspi_defconfig,,u-boot-with-spl-pbl.bin"
+         UBOOT_CONFIG[lpuart] = "ls1021atwr_nor_lpuart_defconfig"
+         UBOOT_CONFIG[qspi] = "ls1021atwr_qspi_defconfig"
+         UBOOT_CONFIG[secure-boot] = "ls1021atwr_nor_SECURE_BOOT_defconfig"
+         UBOOT_CONFIG[sdcard-ifc-secure-boot] = "ls1021atwr_sdcard_ifc_SECURE_BOOT_defconfig,,u-boot-with-spl-pbl.bin"
 
-      In this example, "sd" is selected as the configuration of the possible four for the
-      :term:`UBOOT_MACHINE`. The "sd" configuration defines
-      "mx6qsabreauto_config" as the value for :term:`UBOOT_MACHINE`, while the
-      "sdcard" specifies the :term:`IMAGE_FSTYPES` to use for the U-Boot image.
+      In this example, all possible seven configurations are selected. Each
+      configuration specifies "..._defconfig" as :term:`UBOOT_MACHINE`, and
+      the "sd..." configurations define an individual name for
+      :term:`UBOOT_BINARY`. No configuration defines a second parameter for
+      :term:`IMAGE_FSTYPES` to use for the U-Boot image.
 
       For more information on how the :term:`UBOOT_CONFIG` is handled, see the
       :ref:`uboot-config <ref-classes-uboot-config>`
@@ -8607,6 +9072,64 @@ system and gives an overview of their function and contents.
       Specifies the entry point for the U-Boot image. During U-Boot image
       creation, the :term:`UBOOT_ENTRYPOINT` variable is passed as a
       command-line parameter to the ``uboot-mkimage`` utility.
+
+   :term:`UBOOT_FIT_DESC`
+      Specifies the description string encoded into a U-Boot fitImage. The default
+      value is set by the :ref:`ref-classes-uboot-sign` class as follows::
+
+         UBOOT_FIT_DESC ?= "U-Boot fitImage for ${DISTRO_NAME}/${PV}/${MACHINE}"
+
+   :term:`UBOOT_FIT_GENERATE_KEYS`
+      Decides whether to generate the keys for signing the U-Boot fitImage if
+      they don't already exist. The keys are created in :term:`SPL_SIGN_KEYDIR`.
+      The default value is "0".
+
+      Enable this as follows::
+
+         UBOOT_FIT_GENERATE_KEYS = "1"
+
+      This variable is used in the :ref:`ref-classes-uboot-sign` class.
+
+   :term:`UBOOT_FIT_HASH_ALG`
+      Specifies the hash algorithm used in creating the U-Boot FIT Image.
+      It is set by default to ``sha256`` by the :ref:`ref-classes-uboot-sign`
+      class.
+
+   :term:`UBOOT_FIT_KEY_GENRSA_ARGS`
+      Arguments to ``openssl genrsa`` for generating a RSA private key for
+      signing the U-Boot FIT image. The default value of this variable
+      is set to "-F4" by the :ref:`ref-classes-uboot-sign` class.
+
+   :term:`UBOOT_FIT_KEY_REQ_ARGS`
+      Arguments to ``openssl req`` for generating a certificate for signing
+      the U-Boot FIT image. The default value is "-batch -new" by the
+      :ref:`ref-classes-uboot-sign` class, "batch" for
+      non interactive mode and "new" for generating new keys.
+
+   :term:`UBOOT_FIT_KEY_SIGN_PKCS`
+      Format for the public key certificate used for signing the U-Boot FIT
+      image. The default value is set to "x509" by the
+      :ref:`ref-classes-uboot-sign` class.
+
+   :term:`UBOOT_FIT_SIGN_ALG`
+      Specifies the signature algorithm used in creating the U-Boot FIT Image.
+      This variable is set by default to "rsa2048" by the
+      :ref:`ref-classes-uboot-sign` class.
+
+   :term:`UBOOT_FIT_SIGN_NUMBITS`
+      Size of the private key used in signing the U-Boot FIT image, in number
+      of bits. The default value for this variable is set to "2048"
+      by the :ref:`ref-classes-uboot-sign` class.
+
+   :term:`UBOOT_FITIMAGE_ENABLE`
+      This variable allows to generate a FIT image for U-Boot, which is one
+      of the ways to implement a verified boot process.
+
+      Its default value is "0", so set it to "1" to enable this functionality::
+
+         UBOOT_FITIMAGE_ENABLE = "1"
+
+      See the :ref:`ref-classes-uboot-sign` class for details.
 
    :term:`UBOOT_LOADADDRESS`
       Specifies the load address for the U-Boot image. During U-Boot image
@@ -8944,6 +9467,33 @@ system and gives an overview of their function and contents.
       Additionally, you should also set the
       :term:`USERADD_ERROR_DYNAMIC` variable.
 
+   :term:`VIRTUAL-RUNTIME`
+      :term:`VIRTUAL-RUNTIME` is a commonly used prefix for defining virtual
+      packages for runtime usage, typically for use in :term:`RDEPENDS`
+      or in image definitions.
+
+      An example is ``VIRTUAL-RUNTIME_base-utils`` that makes it possible
+      to either use BusyBox based utilities::
+
+         VIRTUAL-RUNTIME_base-utils = "busybox"
+
+      or their full featured implementations from GNU Coreutils
+      and other projects::
+
+         VIRTUAL-RUNTIME_base-utils = "packagegroup-core-base-utils"
+
+      Here are two examples using this virtual runtime package. The
+      first one is in :yocto_git:`initramfs-framework_1.0.bb
+      </poky/tree/meta/recipes-core/initrdscripts/initramfs-framework_1.0.bb?h=scarthgap>`::
+
+         RDEPENDS:${PN} += "${VIRTUAL-RUNTIME_base-utils}"
+
+      The second example is in the :yocto_git:`core-image-initramfs-boot
+      </poky/tree/meta/recipes-core/images/core-image-initramfs-boot.bb?h=scarthgap>`
+      image definition::
+
+         PACKAGE_INSTALL = "${INITRAMFS_SCRIPTS} ${VIRTUAL-RUNTIME_base-utils} base-passwd"
+
    :term:`VOLATILE_LOG_DIR`
       Specifies the persistence of the target's ``/var/log`` directory,
       which is used to house postinstall target log files.
@@ -8984,7 +9534,7 @@ system and gives an overview of their function and contents.
       With the :term:`WKS_FILE_DEPENDS` variable, you have the possibility to
       specify a list of additional dependencies (e.g. native tools,
       bootloaders, and so forth), that are required to build Wic images.
-      Following is an example::
+      Here is an example::
 
          WKS_FILE_DEPENDS = "some-native-tool"
 
@@ -9020,8 +9570,8 @@ system and gives an overview of their function and contents.
       -  :term:`TMPDIR`: The top-level build output directory
       -  :term:`MULTIMACH_TARGET_SYS`: The target system identifier
       -  :term:`PN`: The recipe name
-      -  :term:`EXTENDPE`: The epoch - (if :term:`PE` is not specified, which
-         is usually the case for most recipes, then `EXTENDPE` is blank)
+      -  :term:`EXTENDPE`: The epoch --- if :term:`PE` is not specified, which
+         is usually the case for most recipes, then `EXTENDPE` is blank.
       -  :term:`PV`: The recipe version
       -  :term:`PR`: The recipe revision
 
@@ -9075,4 +9625,3 @@ system and gives an overview of their function and contents.
 
       On systems where many tasks run in parallel, setting a limit to this
       can be helpful in controlling system resource usage.
-

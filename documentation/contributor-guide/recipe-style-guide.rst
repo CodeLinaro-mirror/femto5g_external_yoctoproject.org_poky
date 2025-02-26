@@ -250,6 +250,18 @@ Recipes need to define both the :term:`LICENSE` and
    correct string that you can substitute into the recipe file for a
    subsequent build.
 
+License Updates
+~~~~~~~~~~~~~~~
+
+When you change the :term:`LICENSE` or :term:`LIC_FILES_CHKSUM` in the recipe
+you need to briefly explain the reason for the change via a ``License-Update:``
+tag.  Often it's quite trivial, such as::
+
+    License-Update: copyright years refreshed
+
+Less often, the actual licensing terms themselves will have changed.  If so, do
+try to link to upstream making/justifying that decision.
+
 Tips and Guidelines for Writing Recipes
 ---------------------------------------
 
@@ -383,7 +395,7 @@ one CVE is fixed, separate them using spaces.
 CVE Examples
 ------------
 
-This should be the header of patch that fixes :cve:`2015-8370` in GRUB2::
+This should be the header of patch that fixes :cve_nist:`2015-8370` in GRUB2::
 
    grub2: Fix CVE-2015-8370
 

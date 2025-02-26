@@ -82,7 +82,7 @@ Follow these general steps to create your layer without using tools:
       LAYERVERSION_yoctobsp = "4"
       LAYERSERIES_COMPAT_yoctobsp = "dunfell"
 
-   Following is an explanation of the layer configuration file:
+   Here is an explanation of the layer configuration file:
 
    -  :term:`BBPATH`: Adds the layer's
       root directory to BitBake's search path. Through the use of the
@@ -127,6 +127,20 @@ Follow these general steps to create your layer without using tools:
       releases for which the current version is compatible. This
       variable is a good way to indicate if your particular layer is
       current.
+
+
+   .. note::
+
+      A layer does not have to contain only recipes ``.bb`` or append files
+      ``.bbappend``. Generally, developers create layers using
+      ``bitbake-layers create-layer``.
+      See ":ref:`dev-manual/layers:creating a general layer using the \`\`bitbake-layers\`\` script`",
+      explaining how the ``layer.conf`` file is created from a template located in
+      ``meta/lib/bblayers/templates/layer.conf``.
+      In fact, none of the variables set in ``layer.conf`` are mandatory,
+      except when :term:`BBFILE_COLLECTIONS` is present. In this case
+      :term:`LAYERSERIES_COMPAT` and :term:`BBFILE_PATTERN` have to be
+      defined too.
 
 #. *Add Content:* Depending on the type of layer, add the content. If
    the layer adds support for a machine, add the machine configuration
@@ -177,7 +191,7 @@ following list:
 -  *Structure Your Layers:* Proper use of overrides within append files
    and placement of machine-specific files within your layer can ensure
    that a build is not using the wrong Metadata and negatively impacting
-   a build for a different machine. Following are some examples:
+   a build for a different machine. Here are some examples:
 
    -  *Modify Variables to Support a Different Machine:* Suppose you
       have a layer named ``meta-one`` that adds support for building
@@ -299,7 +313,7 @@ Logo for your layer and application. The process consists of two parts:
    successful compatibility registration.
 
 #. Completion of an application acceptance form, which you can find at
-   :yocto_home:`/webform/yocto-project-compatible-registration`.
+   :yocto_home:`/compatible-registration/`.
 
 To be granted permission to use the logo, you need to satisfy the
 following:
@@ -323,7 +337,7 @@ application, you can use the Yocto Project Compatibility Logo with your
 layer and the application that uses your layer.
 
 To access the form, use this link:
-:yocto_home:`/webform/yocto-project-compatible-registration`.
+:yocto_home:`/compatible-registration`.
 Follow the instructions on the form to complete your application.
 
 The application consists of the following sections:
@@ -487,19 +501,19 @@ the "meta" layer at ``meta/recipes-bsp/formfactor``::
    INHIBIT_DEFAULT_DEPS = "1"
 
    do_install() {
-	   # Install file only if it has contents
+           # Install file only if it has contents
            install -d ${D}${sysconfdir}/formfactor/
            install -m 0644 ${S}/config ${D}${sysconfdir}/formfactor/
-	   if [ -s "${S}/machconfig" ]; then
-	           install -m 0644 ${S}/machconfig ${D}${sysconfdir}/formfactor/
-	   fi
+           if [ -s "${S}/machconfig" ]; then
+                   install -m 0644 ${S}/machconfig ${D}${sysconfdir}/formfactor/
+           fi
    }
 
 In the main recipe, note the :term:`SRC_URI`
 variable, which tells the OpenEmbedded build system where to find files
 during the build.
 
-Following is the append file, which is named ``formfactor_0.0.bbappend``
+Here is the append file, which is named ``formfactor_0.0.bbappend``
 and is from the Raspberry Pi BSP Layer named ``meta-raspberrypi``. The
 file is in the layer at ``recipes-bsp/formfactor``::
 
@@ -568,13 +582,13 @@ Directory`.  Here is the main ``xserver-xf86-config`` recipe, which is named
    ALLOW_EMPTY:${PN} = "1"
 
    do_install () {
-	if test -s ${WORKDIR}/xorg.conf; then
-		install -d ${D}/${sysconfdir}/X11
-		install -m 0644 ${WORKDIR}/xorg.conf ${D}/${sysconfdir}/X11/
-	fi
+        if test -s ${WORKDIR}/xorg.conf; then
+                install -d ${D}/${sysconfdir}/X11
+                install -m 0644 ${WORKDIR}/xorg.conf ${D}/${sysconfdir}/X11/
+        fi
    }
 
-Following is the append file, which is named ``xserver-xf86-config_%.bbappend``
+Here is the append file, which is named ``xserver-xf86-config_%.bbappend``
 and is from the Raspberry Pi BSP Layer named ``meta-raspberrypi``. The
 file is in the layer at ``recipes-graphics/xorg-xserver``::
 
@@ -629,6 +643,96 @@ variable and append the layer's root name::
    Also, the layer priority does not currently affect the precedence
    order of ``.conf`` or ``.bbclass`` files. Future versions of BitBake
    might address this.
+
+Providing Global-level Configurations With Your Layer
+-----------------------------------------------------
+
+When creating a layer, you may need to define configurations that should take
+effect globally in your build environment when the layer is part of the build.
+The ``layer.conf`` file is a :term:`configuration file` that affects the build
+system globally, so it is a candidate for this use-case.
+
+.. warning::
+
+   Providing unconditional global level configuration from the ``layer.conf``
+   file is *not* a good practice, and should be avoided. For this reason, the
+   section :ref:`ref-conditional-layer-confs` below shows how the ``layer.conf``
+   file can be used to provide configurations only if a certain condition is
+   met.
+
+For example, if your layer provides a Linux kernel recipe named
+``linux-custom``, you may want to make :term:`PREFERRED_PROVIDER_virtual/kernel
+<PREFERRED_PROVIDER>` point to ``linux-custom``::
+
+   PREFERRED_PROVIDER_virtual/kernel = "linux-custom"
+
+This can be defined in the ``layer.conf`` file. If your layer is at the last
+position in the :term:`BBLAYERS` list, it will take precedence over previous
+``PREFERRED_PROVIDER_virtual/kernel`` assignments (unless one is set from a
+:term:`configuration file` that is parsed later, such as machine or distro
+configuration files).
+
+.. _ref-conditional-layer-confs:
+
+Conditionally Provide Global-level Configurations With Your Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In some cases, your layer may provide global configurations only if some
+features it provides are enabled. Since the ``layer.conf`` file is parsed at an
+earlier stage in the parsing process, the :term:`DISTRO_FEATURES` and
+:term:`MACHINE_FEATURES` variables are not yet available to ``layer.conf``, and
+declaring conditional assignments based on these variables is not possible. The
+following technique shows a way to bypass this limitation by using the
+:term:`USER_CLASSES` variable and a conditional ``require`` command.
+
+In the following steps, let's assume our layer is named ``meta-mylayer`` and
+that this layer defines a custom :ref:`distro feature <ref-features-distro>`
+named ``mylayer-kernel``. We will set the :term:`PREFERRED_PROVIDER` variable
+for the kernel only if our feature ``mylayer-kernel`` is part of the
+:term:`DISTRO_FEATURES`:
+
+#. Create an include file in the directory
+   ``meta-mylayer/conf/distro/include/``, for example a file named
+   ``mylayer-kernel-provider.inc`` that sets the kernel provider to
+   ``linux-custom``::
+
+      PREFERRED_PROVIDER_virtual/kernel = "linux-custom"
+
+#. Provide a path to this include file in your ``layer.conf``::
+
+      META_MYLAYER_KERNEL_PROVIDER_PATH = "${LAYERDIR}/conf/distro/include/mylayer-kernel-provider.inc"
+
+#. Create a new class in ``meta-mylayer/classes-global/``, for example a class
+   ``meta-mylayer-cfg.bbclass``. Make it conditionally require the file
+   ``mylayer-kernel-provider.inc`` defined above, using the variable
+   ``META_MYLAYER_KERNEL_PROVIDER_PATH`` defined in ``layer.conf``::
+
+      require ${@bb.utils.contains('DISTRO_FEATURES', 'mylayer-kernel', '${META_MYLAYER_KERNEL_PROVIDER_PATH}', '', d)}
+
+   For details on the ``bb.utils.contains`` function, see its definition in
+   :bitbake_git:`lib/bb/utils.py </tree/lib/bb/utils.py>`.
+
+   .. note::
+
+      The ``require`` command is designed to not fail if the function
+      ``bb.utils.contains`` returns an empty string.
+
+#. Back to your ``layer.conf`` file, add the class ``meta-mylayer-cfg`` class to
+   the :term:`USER_CLASSES` variable::
+
+      USER_CLASSES:append = " meta-mylayer-cfg"
+
+   This will add the class ``meta-mylayer-cfg`` to the list of classes to
+   globally inherit. Since the ``require`` command is conditional in
+   ``meta-mylayer-cfg.bbclass``, even though inherited the class will have no
+   effect unless the feature ``mylayer-kernel`` is enabled through
+   :term:`DISTRO_FEATURES`.
+
+This technique can also be used for :ref:`Machine features
+<ref-features-machine>` by following the same steps. Though not mandatory, it is
+recommended to put include files for :term:`DISTRO_FEATURES` in your layer's
+``conf/distro/include`` and the ones for :term:`MACHINE_FEATURES` in your
+layer's ``conf/machine/include``.
 
 Managing Layers
 ===============

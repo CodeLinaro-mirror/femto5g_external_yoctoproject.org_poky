@@ -57,7 +57,7 @@ Set up Git
 The first thing to do is to install Git packages. Here is an example
 on Debian and Ubuntu::
 
-   sudo aptitude install git-core git-email
+   sudo apt install git-core git-email
 
 Then, you need to set a name and e-mail address that Git will
 use to identify your commits::
@@ -221,6 +221,38 @@ to add the upgraded version.
    <https://www.kernel.org/doc/html/latest/process/submitting-patches.html#using-reported-by-tested-by-reviewed-by-suggested-by-and-fixes>`__
    in the Linux kernel documentation.
 
+Test your changes
+-----------------
+
+For each contributions you make, you should test your changes as well.
+For this the Yocto Project offers several types of tests. Those tests cover
+different areas and it depends on your changes which are feasible. For example run:
+
+   -  For changes that affect the build environment:
+
+      -  ``bitbake-selftest``: for changes within BitBake
+
+      -  ``oe-selftest``: to test combinations of BitBake runs
+
+      -  ``oe-build-perf-test``: to test the performance of common build scenarios
+
+   -  For changes in a recipe:
+
+      - ``ptest``: run package specific tests, if they exist
+
+      - ``testimage``: build an image, boot it and run testcases on it
+
+      - If applicable, ensure also the ``native`` and ``nativesdk`` variants builds
+
+   -  For changes relating to the SDK:
+
+      - ``testsdk``: to build, install and run tests against a SDK
+
+      - ``testsdk_ext``: to build, install and run tests against an extended SDK
+
+Note that this list just gives suggestions and is not exhaustive. More details can
+be found here: :ref:`test-manual/intro:Yocto Project Tests --- Types of Testing Overview`.
+
 Creating Patches
 ================
 
@@ -359,7 +391,7 @@ varies by component:
    :oe_lists:`bitbake-devel </g/bitbake-devel>`
    mailing list.
 
--  *"meta-\*" trees:* These trees contain Metadata. Use the
+-  *meta-poky* and *meta-yocto-bsp* trees: These trees contain Metadata. Use the
    :yocto_lists:`poky </g/poky>` mailing list.
 
 -  *Documentation*: For changes to the Yocto Project documentation, use the
@@ -367,7 +399,7 @@ varies by component:
 
 For changes to other layers and tools hosted in the Yocto Project source
 repositories (i.e. :yocto_git:`git.yoctoproject.org <>`), use the
-:yocto_lists:`yocto </g/yocto/>` general mailing list.
+:yocto_lists:`yocto-patches </g/yocto-patches/>` general mailing list.
 
 For changes to other layers hosted in the OpenEmbedded source
 repositories (i.e. :oe_git:`git.openembedded.org <>`), use
@@ -398,7 +430,7 @@ their e-mail clients will default to including your email address in the
 conversation anyway.
 
 Anyway, you'll also be able to access the new messages on mailing list archives,
-either through a web browser, or for the lists archived on https://lore.kernelorg,
+either through a web browser, or for the lists archived on https://lore.kernel.org,
 through an individual newsgroup feed or a git repository.
 
 Sending Patches via Email
@@ -410,7 +442,7 @@ typical usage of ``git send-email``::
    git send-email --to <mailing-list-address> *.patch
 
 Then, review each subject line and list of recipients carefully, and then
-and then allow the command to send each message.
+allow the command to send each message.
 
 You will see that ``git send-email`` will automatically copy the people listed
 in any commit tags such as ``Signed-off-by`` or ``Reported-by``.
@@ -420,7 +452,7 @@ or any layer other than :oe_git:`openembedded-core </openembedded-core/>`,
 please add the appropriate prefix so that it is clear which layer the patch is intended
 to be applied to::
 
-   git send-email --subject-prefix="meta-oe][PATCH" ...
+   git format-patch --subject-prefix="meta-oe][PATCH" ...
 
 .. note::
 

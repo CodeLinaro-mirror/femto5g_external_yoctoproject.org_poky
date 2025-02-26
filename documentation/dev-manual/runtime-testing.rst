@@ -52,6 +52,8 @@ In order to run tests, you need to do the following:
          -  Be sure to use an absolute path when calling this script
             with sudo.
 
+         -  Ensure that your host has the package ``iptables`` installed.
+
          -  The package recipe ``qemu-helper-native`` is required to run
             this script. Build the package using the following command::
 
@@ -197,7 +199,7 @@ perform a one-time setup of your controller image by doing the following:
    "controller" image and you can customize the image recipe as you would
    any other recipe.
 
-   Here are the image recipe requirements:
+   Image recipe requirements are:
 
    -  Inherits ``core-image`` so that kernel modules are installed.
 
@@ -229,7 +231,7 @@ The final thing you need to do when setting :term:`TEST_TARGET` to
    statements in your ``local.conf`` file::
 
       IMAGE_FSTYPES += "tar.gz"
-      INHERIT += "testimage"
+      IMAGE_CLASSES += "testimage"
       TEST_TARGET = "SystemdbootTarget"
       TEST_TARGET_IP = "192.168.2.3"
 
@@ -332,10 +334,10 @@ You can start the tests automatically or manually:
       bitbake core-image-sato
 
 -  *Manually running tests:* To manually run the tests, first globally
-   inherit the :ref:`ref-classes-testimage*` class by editing your
+   inherit the :ref:`ref-classes-testimage` class by editing your
    ``local.conf`` file::
 
-      INHERIT += "testimage"
+      IMAGE_CLASSES += "testimage"
 
    Next, use BitBake to run the tests::
 
@@ -459,7 +461,7 @@ layer's ``layer.conf`` file as normal). Just remember the following:
    directory.
 
 To create a new test, start by copying an existing module (e.g.
-``syslog.py`` or ``gcc.py`` are good ones to use). Test modules can use
+``oe_syslog.py`` or ``gcc.py`` are good ones to use). Test modules can use
 code from ``meta/lib/oeqa/utils``, which are helper classes.
 
 .. note::
@@ -576,7 +578,7 @@ data:
    When set to "true", the package is not automatically installed into
    the DUT.
 
-Following is an example JSON file that handles test "foo" installing
+Here is an example JSON file that handles test "foo" installing
 package "bar" and test "foobar" installing packages "foo" and "bar".
 Once the test is complete, the packages are removed from the DUT::
 

@@ -129,7 +129,7 @@ metadata:
 
 -  *directfb:* Include DirectFB support.
 
--  *ext2:* Include tools for supporting for devices with internal
+-  *ext2:* Include tools for supporting devices with internal
    HDD/Microdrive for storing files (instead of Flash only devices).
 
 -  *ipsec:* Include IPSec support.
@@ -198,7 +198,7 @@ you can add several different predefined packages such as development
 utilities or packages with debug information needed to investigate
 application problems or profile applications.
 
-Here are the image features available for all images:
+The image features available for all images are:
 
 -  *allow-empty-password:* Allows Dropbear and OpenSSH to accept root
    logins and logins from accounts having an empty password string.

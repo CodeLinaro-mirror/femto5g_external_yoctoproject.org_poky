@@ -383,11 +383,7 @@ home directory:
 
 1. *Create Structure*: Create the layer's structure::
 
-      $ mkdir meta-mylayer
-      $ mkdir meta-mylayer/conf
-      $ mkdir meta-mylayer/recipes-kernel
-      $ mkdir meta-mylayer/recipes-kernel/linux
-      $ mkdir meta-mylayer/recipes-kernel/linux/linux-yocto
+      $ mkdir -p meta-mylayer/conf meta-mylayer/recipes-kernel/linux/linux-yocto
 
    The ``conf`` directory holds your configuration files, while the
    ``recipes-kernel`` directory holds your append file and eventual
@@ -455,13 +451,13 @@ Creating the Append File
 
 You create this file in your custom layer. You also name it accordingly
 based on the linux-yocto recipe you are using. For example, if you are
-modifying the ``meta/recipes-kernel/linux/linux-yocto_4.12.bb`` recipe,
+modifying the ``meta/recipes-kernel/linux/linux-yocto_5.15.bb`` recipe,
 the append file will typically be located as follows within your custom
 layer:
 
 .. code-block:: none
 
-   your-layer/recipes-kernel/linux/linux-yocto_4.12.bbappend
+   your-layer/recipes-kernel/linux/linux-yocto_5.15.bbappend
 
 The append file should initially extend the
 :term:`FILESPATH` search path by
@@ -489,36 +485,36 @@ As an example, consider the following append file used by the BSPs in
 
 .. code-block:: none
 
-   meta-yocto-bsp/recipes-kernel/linux/linux-yocto_4.12.bbappend
+   meta-yocto-bsp/recipes-kernel/linux/linux-yocto_5.15.bbappend
 
 Here are the contents of this file. Be aware that the actual commit ID
 strings in this example listing might be different than the actual
 strings in the file from the ``meta-yocto-bsp`` layer upstream.
 ::
 
-   KBRANCH:genericx86  = "standard/base"
-   KBRANCH:genericx86-64  = "standard/base"
+   KBRANCH:genericx86  = "v5.15/standard/base"
+   KBRANCH:genericx86-64  = "v5.15/standard/base"
+   KBRANCH:edgerouter = "v5.15/standard/edgerouter"
+   KBRANCH:beaglebone-yocto = "v5.15/standard/beaglebone"
 
    KMACHINE:genericx86 ?= "common-pc"
    KMACHINE:genericx86-64 ?= "common-pc-64"
-   KBRANCH:edgerouter = "standard/edgerouter"
-   KBRANCH:beaglebone = "standard/beaglebone"
+   KMACHINE:beaglebone-yocto ?= "beaglebone"
 
-   SRCREV_machine:genericx86    ?= "d09f2ce584d60ecb7890550c22a80c48b83c2e19"
-   SRCREV_machine:genericx86-64 ?= "d09f2ce584d60ecb7890550c22a80c48b83c2e19"
-   SRCREV_machine:edgerouter ?= "b5c8cfda2dfe296410d51e131289fb09c69e1e7d"
-   SRCREV_machine:beaglebone ?= "b5c8cfda2dfe296410d51e131289fb09c69e1e7d"
-
+   SRCREV_machine:genericx86 ?= "0b628306d1f9ea28c0e86369ce9bb87a47893c9c"
+   SRCREV_machine:genericx86-64 ?= "0b628306d1f9ea28c0e86369ce9bb87a47893c9c"
+   SRCREV_machine:edgerouter ?= "90f1ee6589264545f548d731c2480b08a007230f"
+   SRCREV_machine:beaglebone-yocto ?= "9aabbaa89fcb21af7028e814c1f5b61171314d5a"
 
    COMPATIBLE_MACHINE:genericx86 = "genericx86"
    COMPATIBLE_MACHINE:genericx86-64 = "genericx86-64"
    COMPATIBLE_MACHINE:edgerouter = "edgerouter"
-   COMPATIBLE_MACHINE:beaglebone = "beaglebone"
+   COMPATIBLE_MACHINE:beaglebone-yocto = "beaglebone-yocto"
 
-   LINUX_VERSION:genericx86 = "4.12.7"
-   LINUX_VERSION:genericx86-64 = "4.12.7"
-   LINUX_VERSION:edgerouter = "4.12.10"
-   LINUX_VERSION:beaglebone = "4.12.10"
+   LINUX_VERSION:genericx86 = "5.15.72"
+   LINUX_VERSION:genericx86-64 = "5.15.72"
+   LINUX_VERSION:edgerouter = "5.15.54"
+   LINUX_VERSION:beaglebone-yocto = "5.15.54"
 
 This append file
 contains statements used to support several BSPs that ship with the
@@ -1044,9 +1040,7 @@ Section.
    additional structure to your layer using the following commands::
 
       $ cd ~/meta-mylayer
-      $ mkdir recipes-kernel
-      $ mkdir recipes-kernel/linux
-      $ mkdir recipes-kernel/linux/linux-yocto
+      $ mkdir -p recipes-kernel recipes-kernel/linux/linux-yocto
 
    Once you have created this
    hierarchy in your layer, you can move the patch file using the
@@ -1081,7 +1075,7 @@ Section.
       the following sequence of commands::
 
               $ cd poky/build
-              $ bitbake -c cleanall yocto-linux
+              $ bitbake -c cleanall linux-yocto
               $ bitbake core-image-minimal -c cleanall
               $ bitbake core-image-minimal
               $ runqemu qemux86
@@ -1376,7 +1370,7 @@ In order to run this task, you must have an existing ``.config`` file.
 See the ":ref:`kernel-dev/common:using \`\`menuconfig\`\``" section for
 information on how to create a configuration file.
 
-Following is sample output from the ``do_kernel_configcheck`` task:
+Here is sample output from the ``do_kernel_configcheck`` task:
 
 .. code-block:: none
 
@@ -1755,10 +1749,10 @@ looks much like the one provided with the ``hello-mod`` template::
    SRC := $(shell pwd)
 
    all:
-   	$(MAKE) -C $(KERNEL_SRC) M=$(SRC)
+        $(MAKE) -C $(KERNEL_SRC) M=$(SRC)
 
    modules_install:
-   	$(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules_install
+        $(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules_install
    ...
 
 The important point to note here is the :term:`KERNEL_SRC` variable. The
@@ -1809,7 +1803,7 @@ tree. Using Git is an efficient way to see what has changed in the tree.
 What Changed in a Kernel?
 -------------------------
 
-Following are a few examples that show how to use Git commands to
+Here are a few examples that show how to use Git commands to
 examine changes. These examples are by no means the only way to see
 changes.
 
