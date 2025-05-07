@@ -58,6 +58,11 @@ SRC_URI = "https://curl.se/download/${BP}.tar.xz \
            file://CVE-2023-46219-0002.patch \
            file://CVE-2023-46219-0003.patch \
            file://CVE-2024-2398.patch \
+           file://CVE-2024-7264_1.patch \
+           file://CVE-2024-7264_2.patch \
+           file://CVE-2024-8096.patch \
+           file://0001-url-free-old-conn-better-on-reuse.patch \
+           file://CVE-2024-9681.patch \
            "
 SRC_URI[sha256sum] = "0aaa12d7bd04b0966254f2703ce80dd5c38dbbd76af0297d3d690cdce58a583c"
 
@@ -66,6 +71,8 @@ CVE_PRODUCT = "haxx:curl haxx:libcurl curl:curl curl:libcurl libcurl:libcurl dan
 
 # This CVE reports that apple had to upgrade curl because of other already reported CVEs
 CVE_CHECK_IGNORE += "CVE-2023-42915"
+# ignored: CURLOPT_SSL_VERIFYPEER was disabled on google cloud services causing a potential man in the middle attack
+CVE_CHECK_IGNORE += "CVE-2024-32928"
 
 inherit autotools pkgconfig binconfig multilib_header
 
