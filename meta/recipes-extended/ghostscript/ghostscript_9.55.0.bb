@@ -24,7 +24,7 @@ UPSTREAM_CHECK_REGEX = "(?P<pver>\d+(\.\d+)+)\.tar"
 CVE_CHECK_IGNORE += "CVE-2013-6629"
 
 # Issue in the GhostPCL. GhostPCL not part of this GhostScript recipe.
-CVE_CHECK_IGNORE += "CVE-2023-38560"
+CVE_CHECK_IGNORE += "CVE-2023-38560 CVE-2024-46954"
 
 def gs_verdir(v):
     return "".join(v.split("."))
@@ -57,6 +57,11 @@ SRC_URI_BASE = "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/d
                 file://CVE-2024-29508-1.patch \
                 file://CVE-2024-29508-2.patch \
                 file://CVE-2023-46361.patch \
+                file://CVE-2024-46951.patch \
+                file://CVE-2024-46952.patch \
+                file://CVE-2024-46953.patch \
+                file://CVE-2024-46955.patch \
+                file://CVE-2024-46956.patch \
 "
 
 SRC_URI = "${SRC_URI_BASE} \

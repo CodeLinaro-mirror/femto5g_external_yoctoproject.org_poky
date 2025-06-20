@@ -36,6 +36,7 @@ SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH};protocol=http
            file://CVE-2023-46049.patch;striplevel=2 \
            file://CVE-2024-31852-1.patch;striplevel=2 \
            file://CVE-2024-31852-2.patch;striplevel=2 \
+	   file://CVE-2024-0151.patch;striplevel=2 \
            "
 
 UPSTREAM_CHECK_GITTAGREGEX = "llvmorg-(?P<pver>\d+(\.\d+)+)"
@@ -94,6 +95,8 @@ EXTRA_OECMAKE:append:class-nativesdk = "\
                   -DLLVM_TABLEGEN=${STAGING_BINDIR_NATIVE}/llvm-tblgen${PV} \
                   -DLLVM_CONFIG_PATH=${STAGING_BINDIR_NATIVE}/llvm-config${PV} \
                  "
+# Unless DEBUG_BUILD is enabled, pass -g1 to massively reduce the size of the debug symbols
+DEBUG_FLAGS:append = "${@oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d)}"
 
 do_configure:prepend() {
 # Fix paths in llvm-config

@@ -120,6 +120,14 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2024-4467-0005.patch \
            file://CVE-2023-3019-0001.patch \
            file://CVE-2023-3019-0002.patch \
+           file://CVE-2024-6505.patch \
+           file://CVE-2024-3446-0001.patch \
+           file://CVE-2024-3446-0002.patch \
+           file://CVE-2024-3446-0003.patch \
+           file://CVE-2024-3446-0004.patch \
+           file://CVE-2024-3446-0005.patch \
+           file://CVE-2024-3446-0006.patch \
+           file://CVE-2024-3447.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -147,6 +155,11 @@ CVE_CHECK_IGNORE += "CVE-2023-0664"
 # As per https://bugzilla.redhat.com/show_bug.cgi?id=2203387
 # RHEL specific issue
 CVE_CHECK_IGNORE += "CVE-2023-2680"
+
+# The CVE has disputed flag in NVD DB and also descrition contains:
+# Note: This has been disputed by multiple third parties as not a valid vulnerability
+#       due to the rocker device not falling within the virtualization use case.
+CVE_CHECK_IGNORE += "CVE-2022-36648"
 
 COMPATIBLE_HOST:mipsarchn32 = "null"
 COMPATIBLE_HOST:mipsarchn64 = "null"
