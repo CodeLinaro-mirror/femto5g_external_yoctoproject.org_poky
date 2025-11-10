@@ -2801,6 +2801,10 @@ system and gives an overview of their function and contents.
       For guidance on how to create your own file permissions settings
       table file, examine the existing ``fs-perms.txt``.
 
+   :term:`FIT_CONF_PREFIX`
+      When using the :ref:`ref-classes-kernel-fitimage`, this is the prefix
+      used for creating FIT configuration nodes. Its default value is "conf-".
+
    :term:`FIT_DESC`
       Specifies the description string encoded into a fitImage. The default
       value is set by the :ref:`kernel-fitimage <ref-classes-kernel-fitimage>`
@@ -3530,6 +3534,12 @@ system and gives an overview of their function and contents.
       Alternatively, you can ensure a specific amount of free disk space is
       added to the image by using the :term:`IMAGE_ROOTFS_EXTRA_SPACE`
       variable.
+
+      When using Wic tool, beware that a second overhead factor is also applied.
+      This overhead value is defined by the ``--overhead-factor`` option, which
+      defaults to "1.3" when omitted. See the
+      :ref:`ref-manual/kickstart:command: part or partition` chapter in
+      :doc:`/ref-manual/kickstart` for details.
 
    :term:`IMAGE_PKGTYPE`
       Defines the package type (i.e. DEB, RPM, IPK, or TAR) used by the
@@ -7790,6 +7800,11 @@ system and gives an overview of their function and contents.
       ":ref:`dev-manual/layers:adding a layer using the \`\`bitbake-layers\`\` script`"
       section in the Yocto Project Board Support Package Developer's Guide
       for additional information.
+
+   :term:`SPL_DTB_BINARY`
+      When inheriting the :ref:`ref-classes-uboot-sign` class, the
+      :term:`SPL_DTB_BINARY` variable contains the name of the SPL binary to be
+      compiled.
 
    :term:`SPL_MKIMAGE_DTCOPTS`
       Options for the device tree compiler passed to ``mkimage -D`` feature

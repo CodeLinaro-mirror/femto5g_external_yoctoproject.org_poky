@@ -3038,6 +3038,22 @@ class assuming :term:`PATCHRESOLVE` is set to "user", the
 :ref:`ref-classes-cml1` class, and the :ref:`ref-classes-devshell` class all
 use the :ref:`ref-classes-terminal` class.
 
+.. _ref-classes-testexport:
+
+``testexport``
+==============
+
+Based on the :ref:`ref-classes-testimage` class, the
+:ref:`ref-classes-testexport` class can be used to export the test environment
+outside of the :term:`OpenEmbedded Build System`. This will generate the
+directory structure to execute the runtime tests using the
+:oe_git:`runexported.py </openembedded-core/tree/meta/lib/oeqa/runexported.py>`
+Python script.
+
+For more details on how to use :ref:`ref-classes-testexport`, see
+the :ref:`test-manual/runtime-testing:Exporting Tests` section in the Yocto
+Project Test Environment Manual.
+
 .. _ref-classes-testimage:
 
 ``testimage``
@@ -3163,6 +3179,9 @@ It is intended to be inherited from U-Boot recipes.
 
 The variables used by this class are:
 
+-  :term:`SPL_DTB_BINARY`: Name of the SPL device tree binary. Can be set to an
+   empty string to indicate that no SPL should be created and added to the FIT
+   image.
 -  :term:`SPL_MKIMAGE_DTCOPTS`: DTC options for U-Boot ``mkimage`` when
    building the FIT image.
 -  :term:`SPL_SIGN_ENABLE`: enable signing the FIT image.
