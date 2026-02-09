@@ -59,6 +59,7 @@ SRC_URI = "${GNU_MIRROR}/grub/grub-${PV}.tar.gz \
            file://CVE-2025-0678_CVE-2025-1125.patch \
            file://CVE-2025-0690.patch \
            file://CVE-2025-1118.patch \
+           file://CVE-2024-56738.patch \
 "
 
 SRC_URI[sha256sum] = "23b64b4c741569f9426ed2e3d0e6780796fca081bee4c99f62aa3f53ae803f5f"
@@ -69,6 +70,8 @@ CVE_CHECK_IGNORE += "CVE-2019-14865"
 CVE_CHECK_IGNORE += "CVE-2021-46705"
 # not-applicable-platform: Applies only to RHEL/Fedora
 CVE_CHECK_IGNORE += "CVE-2024-1048 CVE-2023-4001"
+# not-applicable-platform: Applies only to Ubuntu
+CVE_CHECK_IGNORE += "CVE-2024-2312"
 
 DEPENDS = "flex-native bison-native gettext-native"
 

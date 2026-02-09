@@ -66,6 +66,7 @@ SRC_URI = "https://curl.se/download/${BP}.tar.xz \
            file://CVE-2024-11053-0001.patch \
            file://CVE-2024-11053-0002.patch \
            file://CVE-2025-0167.patch \
+           file://CVE-2025-9086.patch \
            "
 SRC_URI[sha256sum] = "0aaa12d7bd04b0966254f2703ce80dd5c38dbbd76af0297d3d690cdce58a583c"
 
@@ -78,6 +79,8 @@ CVE_CHECK_IGNORE += "CVE-2023-42915"
 CVE_CHECK_IGNORE += "CVE-2024-32928"
 # ignored: gzip decompression of content-encoded HTTP responses with the `CURLOPT_ACCEPT_ENCODING` option, using zlib 1.2.0.3 or older
 CVE_CHECK_IGNORE += "CVE-2025-0725"
+# not-applicable-config: applicable only with wolfssl
+CVE_CHECK_IGNORE += "${@bb.utils.contains('PACKAGECONFIG', 'openssl', 'CVE-2025-10966','',d)}"
 
 inherit autotools pkgconfig binconfig multilib_header
 
