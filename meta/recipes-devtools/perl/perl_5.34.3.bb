@@ -21,6 +21,7 @@ SRC_URI = "https://www.cpan.org/src/5.0/perl-${PV}.tar.gz;name=perl \
            file://CVE-2023-31484.patch \
            file://CVE-2023-31486-0001.patch \
            file://CVE-2023-31486-0002.patch \
+           file://0001-CVE-2024-56406-Heap-buffer-overflow-with-tr.patch \
            "
 SRC_URI:append:class-native = " \
            file://perl-configpm-switch.patch \
@@ -50,6 +51,8 @@ export ENC2XS_NO_COMMENTS = "1"
 
 # Duplicate of CVE-2023-47038, which has already been patched as of perl_5.34.3
 CVE_CHECK_IGNORE:append = " CVE-2023-47100"
+# This is fixed in 5.34.2 via https://github.com/Perl/perl5/commit/12c313ce49b36160a7ca2e9b07ad5bd92ee4a010
+CVE_CHECK_IGNORE:append = " CVE-2023-47038"
 
 do_configure:prepend() {
     cp -rfp ${STAGING_DATADIR_NATIVE}/perl-cross/* ${S}
@@ -67,6 +70,7 @@ do_configure:class-target() {
     -Dlibpth='${libdir} ${base_libdir}' \
     -Dglibpth='${libdir} ${base_libdir}' \
     -Alddlflags=' ${LDFLAGS}' \
+    -Dd_gnulibc=define \
     ${PACKAGECONFIG_CONFARGS}
 
     #perl.c uses an ARCHLIB_EXP define to generate compile-time code that

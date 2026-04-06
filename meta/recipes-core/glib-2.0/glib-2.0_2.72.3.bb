@@ -50,6 +50,34 @@ SRC_URI = "${GNOME_MIRROR}/glib/${SHRT_VER}/glib-${PV}.tar.xz \
            file://CVE-2024-34397_17.patch \
            file://CVE-2024-34397_18.patch \
            file://0001-gvariant-serialiser-Convert-endianness-of-offsets.patch \
+           file://CVE-2024-52533.patch \
+           file://gdatetime-test-fail-0001.patch \
+           file://gdatetime-test-fail-0002.patch \
+           file://gdatetime-test-fail-0003.patch \
+           file://CVE-2025-3360-01.patch \
+           file://CVE-2025-3360-02.patch \
+           file://CVE-2025-3360-03.patch \
+           file://CVE-2025-3360-04.patch \
+           file://CVE-2025-3360-05.patch \
+           file://CVE-2025-3360-06.patch \
+           file://CVE-2025-4373-01.patch \
+           file://CVE-2025-4373-02.patch \
+           file://CVE-2025-7039-01.patch \
+           file://CVE-2025-7039-02.patch \
+           file://CVE-2025-13601-01.patch \
+           file://CVE-2025-13601-02.patch \
+           file://CVE-2025-14087-01.patch \
+           file://CVE-2025-14087-02.patch \
+           file://CVE-2025-14087-03.patch \
+           file://CVE-2025-14512.patch \
+           file://CVE-2026-0988.patch \
+           file://CVE-2026-1484-01.patch \
+           file://CVE-2026-1484-02.patch \
+           file://CVE-2026-1485.patch \
+           file://CVE-2026-1489-01.patch \
+           file://CVE-2026-1489-02.patch \
+           file://CVE-2026-1489-03.patch \
+           file://CVE-2026-1489-04.patch \
            "
 SRC_URI:append:class-native = " file://relocate-modules.patch"
 
@@ -85,3 +113,6 @@ def find_meson_cross_files(d):
 python () {
     find_meson_cross_files(d)
 }
+
+# not-applicable-platform: Issue only applies on Windows
+CVE_CHECK_IGNORE += "CVE-2025-4056"

@@ -165,7 +165,7 @@ The following diagram represents the high-level workflow of a build. The
 remainder of this section expands on the fundamental input, output,
 process, and metadata logical blocks that make up the workflow.
 
-.. image:: figures/YP-flow-diagram.png
+.. image:: svg/yp-flow-diagram.*
    :align: center
 
 In general, the build's workflow consists of several functional areas:
@@ -983,7 +983,7 @@ package.
 
   For more information on the ``oe-pkgdata-util`` utility, see the section
   :ref:`dev-manual/debugging:Viewing Package Information with
-  \`\`oe-pkgdata-util\`\`` of the Yocto Project Development Tasks Manual.
+  ``oe-pkgdata-util``` of the Yocto Project Development Tasks Manual.
 
 To add a custom package variant of the ``${PN}`` recipe named
 ``${PN}-extra`` (name is arbitrary), one can add it to the
@@ -2438,8 +2438,8 @@ The contents of ``sayhello_0.1.bb`` are::
    S = "${WORKDIR}/git"
 
    do_install(){
-      install -d ${D}/usr/bin
-      install -m 0700 sayhello ${D}/usr/bin
+      install -d ${D}${bindir}
+      install -m 0700 sayhello ${D}${bindir}
    }
 
 After placing the recipes in a custom layer we can run ``bitbake sayhello``

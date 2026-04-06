@@ -81,7 +81,7 @@ directory of that Layer. This directory is what you add to the
 ``conf/bblayers.conf`` file found in your
 :term:`Build Directory`, which is
 established after you run the OpenEmbedded build environment setup
-script (i.e. :ref:`ref-manual/structure:\`\`oe-init-build-env\`\``).
+script (i.e. :ref:`ref-manual/structure:``oe-init-build-env```).
 Adding the root directory allows the :term:`OpenEmbedded Build System`
 to recognize the BSP
 layer and from it build an image. Here is an example::
@@ -167,7 +167,7 @@ section.
    BSPs, which are maintained in their own layers or in layers designed
    to contain several BSPs. To get an idea of machine support through
    BSP layers, you can look at the
-   :yocto_dl:`index of machines </releases/yocto/yocto-&DISTRO;/machines>`
+   :yocto_dl:`index of machines </releases/yocto/&DISTRO_REL_LATEST_TAG;/machines>`
    for the release.
 
 #. *Optionally Clone the meta-intel BSP Layer:* If your hardware is
@@ -230,7 +230,7 @@ section.
 
 #. *Initialize the Build Environment:* While in the root directory of
    the Source Directory (i.e. ``poky``), run the
-   :ref:`ref-manual/structure:\`\`oe-init-build-env\`\`` environment
+   :ref:`ref-manual/structure:``oe-init-build-env``` environment
    setup script to define the OpenEmbedded build environment on your
    build host. ::
 
@@ -675,21 +675,21 @@ to the kernel recipe by using a similarly named append file, which is
 located in the BSP Layer for your target device (e.g. the
 ``meta-bsp_root_name/recipes-kernel/linux`` directory).
 
-Suppose you are using the ``linux-yocto_4.4.bb`` recipe to build the
+Suppose you are using the ``linux-yocto_6.12.bb`` recipe to build the
 kernel. In other words, you have selected the kernel in your
 ``"bsp_root_name".conf`` file by adding
 :term:`PREFERRED_PROVIDER` and :term:`PREFERRED_VERSION`
 statements as follows::
 
    PREFERRED_PROVIDER_virtual/kernel ?= "linux-yocto"
-   PREFERRED_VERSION_linux-yocto ?= "4.4%"
+   PREFERRED_VERSION_linux-yocto ?= "6.12%"
 
 .. note::
 
    When the preferred provider is assumed by default, the :term:`PREFERRED_PROVIDER`
    statement does not appear in the ``"bsp_root_name".conf`` file.
 
-You would use the ``linux-yocto_4.4.bbappend`` file to append specific
+You would use the ``linux-yocto_6.12.bbappend`` file to append specific
 BSP settings to the kernel, thus configuring the kernel for your
 particular BSP.
 
@@ -699,14 +699,19 @@ in the Yocto Project Linux Kernel Development Manual.
 
 An alternate scenario is when you create your own kernel recipe for the
 BSP. A good example of this is the Raspberry Pi BSP. If you examine the
-``recipes-kernel/linux`` directory you see the following::
+``recipes-kernel/linux`` directory in that layer you see the following
+Raspberry Pi-specific recipes and associated files::
 
+   files/
+   linux-raspberrypi_6.12.bb
+   linux-raspberrypi_6.1.bb
+   linux-raspberrypi_6.6.bb
    linux-raspberrypi-dev.bb
    linux-raspberrypi.inc
-   linux-raspberrypi_4.14.bb
-   linux-raspberrypi_4.9.bb
-
-The directory contains three kernel recipes and a common include file.
+   linux-raspberrypi-v7_6.12.bb
+   linux-raspberrypi-v7_6.1.bb
+   linux-raspberrypi-v7_6.6.bb
+   linux-raspberrypi-v7.inc
 
 Developing a Board Support Package (BSP)
 ========================================
@@ -1179,7 +1184,7 @@ Use these steps to create a BSP layer:
 
 -  *Create a Kernel Recipe:* Create a kernel recipe in
    ``recipes-kernel/linux`` by either using a kernel append file or a
-   new custom kernel recipe file (e.g. ``linux-yocto_4.12.bb``). The BSP
+   new custom kernel recipe file (e.g. ``linux-yocto_6.12.bb``). The BSP
    layers mentioned in the previous step also contain different kernel
    examples. See the ":ref:`kernel-dev/common:modifying an existing recipe`"
    section in the Yocto Project Linux Kernel Development Manual for

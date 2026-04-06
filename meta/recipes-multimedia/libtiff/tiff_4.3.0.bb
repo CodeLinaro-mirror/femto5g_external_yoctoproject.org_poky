@@ -54,6 +54,17 @@ SRC_URI = "http://download.osgeo.org/libtiff/tiff-${PV}.tar.gz \
            file://CVE-2023-6277-3.patch \
            file://CVE-2023-6277-4.patch \
            file://CVE-2024-7006.patch \
+           file://CVE-2023-3164.patch \
+           file://CVE-2025-8176-0001.patch \
+           file://CVE-2025-8176-0002.patch \
+           file://CVE-2025-8176-0003.patch \
+           file://CVE-2025-8177.patch \
+           file://CVE-2024-13978.patch \
+           file://CVE-2025-8534.patch \
+           file://CVE-2025-8851.patch \
+           file://CVE-2025-9900.patch \
+           file://CVE-2025-8961.patch \
+           file://CVE-2025-9165.patch \
            "
 
 SRC_URI[sha256sum] = "0e46e5acb087ce7d1ac53cf4f56a09b221537fc86dfc5daaad1c2e89e1b37ac8"
@@ -65,8 +76,8 @@ UPSTREAM_CHECK_REGEX = "tiff-(?P<pver>\d+(\.\d+)+).tar"
 # and 4.3.0 doesn't have the issue
 CVE_CHECK_IGNORE += "CVE-2015-7313"
 # These issues only affect libtiff post-4.3.0 but before 4.4.0,
-# caused by 3079627e and fixed by b4e79bfa.
-CVE_CHECK_IGNORE += "CVE-2022-1622 CVE-2022-1623"
+# caused by 3079627e and fixed by b4e79bfa and again by 9be22b63
+CVE_CHECK_IGNORE += "CVE-2022-1622 CVE-2022-1623 CVE-2023-2731"
 # Issue is in jbig which we don't enable
 CVE_CHECK_IGNORE += "CVE-2022-1210"
 
