@@ -98,7 +98,7 @@ files, and how to package the compiled output.
 
 The term "package" is sometimes used to refer to recipes. However, since
 the word "package" is used for the packaged output from the OpenEmbedded
-build system (i.e. ``.ipk`` or ``.deb`` files), this document avoids
+build system (i.e. ``.ipk``, ``.deb`` or ``.rpm`` files), this document avoids
 using the term "package" when referring to recipes.
 
 Classes
@@ -162,7 +162,7 @@ The following diagram represents the high-level workflow of a build. The
 remainder of this section expands on the fundamental input, output,
 process, and metadata logical blocks that make up the workflow.
 
-.. image:: figures/YP-flow-diagram.png
+.. image:: svg/yp-flow-diagram.*
    :width: 100%
 
 In general, the build's workflow consists of several functional areas:
@@ -256,7 +256,7 @@ development environment.
 .. note::
 
    The
-   scripts/oe-setup-builddir
+   ``scripts/oe-setup-builddir``
    script uses the
    ``$TEMPLATECONF``
    variable to determine which sample configuration files to locate.
@@ -352,7 +352,7 @@ layers the build system uses to further control the build. These layers
 provide Metadata for the software, machine, and policies.
 
 In general, there are three types of layer input. You can see them below
-the "User Configuration" box in the `general workflow
+the "User Configuration" box in the :ref:`general workflow
 figure <overview-manual/concepts:openembedded build system concepts>`:
 
 -  *Metadata (.bb + Patches):* Software layers containing
@@ -420,16 +420,17 @@ build.
 Distro Layer
 ~~~~~~~~~~~~
 
-The distribution layer provides policy configurations for your
+A distribution layer provides policy configurations for your
 distribution. Best practices dictate that you isolate these types of
 configurations into their own layer. Settings you provide in
 ``conf/distro/distro.conf`` override similar settings that BitBake finds
 in your ``conf/local.conf`` file in the :term:`Build Directory`.
 
 The following list provides some explanation and references for what you
-typically find in the distribution layer:
+typically find in a distribution layer:
 
--  *classes:* Class files (``.bbclass``) hold common functionality that
+-  *classes*, *classes-global*, *classes-recipe:* Class files (``.bbclass``)
+   hold common functionality that
    can be shared among recipes in the distribution. When your recipes
    inherit a class, they take on the settings and functions for that
    class. You can read more about class files in the
@@ -441,7 +442,7 @@ typically find in the distribution layer:
    (``conf/distro/distro.conf``), and any distribution-wide include
    files.
 
--  *recipes-*:* Recipes and append files that affect common
+-  *recipes-\*:* Recipes and append files that affect common
    functionality across the distribution. This area could include
    recipes and append files to add distribution-specific configuration,
    initialization scripts, custom image recipes, and so forth. Examples
@@ -454,7 +455,7 @@ typically find in the distribution layer:
 BSP Layer
 ~~~~~~~~~
 
-The BSP Layer provides machine configurations that target specific
+A BSP layer provides machine configurations that target specific
 hardware. Everything in this layer is specific to the machine for which
 you are building the image or the SDK. A common structure or form is
 defined for BSP layers. You can learn more about this structure in the
@@ -465,7 +466,7 @@ defined for BSP layers. You can learn more about this structure in the
    In order for a BSP layer to be considered compliant with the Yocto
    Project, it must meet some structural requirements.
 
-The BSP Layer's configuration directory contains configuration files for
+A BSP layer's configuration directory contains configuration files for
 the machine (``conf/machine/machine.conf``) and, of course, the layer
 (``conf/layer.conf``).
 
@@ -477,18 +478,18 @@ formfactors, graphics support systems, and so forth.
 .. note::
 
    While the figure shows several
-   recipes-\*
+   ``recipes-*``
    directories, not all these directories appear in all BSP layers.
 
 Software Layer
 ~~~~~~~~~~~~~~
 
-The software layer provides the Metadata for additional software
+A software layer provides the Metadata for additional software
 packages used during the build. This layer does not include Metadata
 that is specific to the distribution or the machine, which are found in
 their respective layers.
 
-This layer contains any recipes, append files, and patches, that your
+This layer contains any recipes, append files, and patches that your
 project needs.
 
 Sources
@@ -560,9 +561,8 @@ source tree used by the group).
 
 The canonical method through which to include a local project is to use the
 :ref:`ref-classes-externalsrc` class to include that local project. You use
-either the ``local.conf`` or a recipe's append file to override or set the
-recipe to point to the local directory on your disk to pull in the whole
-source tree.
+either ``local.conf`` or a recipe's append file to override or set the
+recipe to point to the local directory from which to fetch the source.
 
 Source Control Managers (Optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -736,9 +736,6 @@ following list describe the :term:`Build Directory`'s hierarchy:
    -  :term:`PV`: The version of the
       recipe used to build the package.
 
-   -  :term:`PR`: The revision of the
-      recipe used to build the package.
-
 -  :term:`S`: Contains the unpacked source
    files for a given recipe.
 
@@ -811,17 +808,20 @@ to a holding area (staged) in preparation for packaging:
 This step in the build process consists of the following tasks:
 
 -  :ref:`ref-tasks-prepare_recipe_sysroot`:
-   This task sets up the two sysroots in
-   ``${``\ :term:`WORKDIR`\ ``}``
-   (i.e. ``recipe-sysroot`` and ``recipe-sysroot-native``) so that
-   during the packaging phase the sysroots can contain the contents of
-   the
-   :ref:`ref-tasks-populate_sysroot`
-   tasks of the recipes on which the recipe containing the tasks
-   depends. A sysroot exists for both the target and for the native
-   binaries, which run on the host system.
+   This task sets up the two sysroots in the ``${``\ :term:`WORKDIR`\ ``}`` (i.e.
+   ``recipe-sysroot`` and ``recipe-sysroot-native``) so that the subsequent tasks
+   of the recipe (notably :ref:`ref-tasks-configure` and :ref:`ref-tasks-compile`)
+   can access the libraries, headers, and similar files built by the recipes on
+   which it depends.
 
--  *do_configure*: This task configures the source by enabling and
+   -  ``recipe-sysroot``: contains target libraries, and associated headers and
+      other data needed to cross-build software from its sources
+
+   -  ``recipe-sysroot-native``: contains host-native executables with their libraries
+      and other data, so that they can be run directly on the build host when
+      that is required by the build process
+
+-  :ref:`ref-tasks-configure`: This task configures the source by enabling and
    disabling any build-time and configuration options for the software
    being built. Configurations can come from the recipe itself as well
    as from an inherited class. Additionally, the software itself might
@@ -840,7 +840,7 @@ This step in the build process consists of the following tasks:
    class, see the :ref:`ref-classes-autotools` class
    :yocto_git:`here </poky/tree/meta/classes-recipe/autotools.bbclass>`.
 
--  *do_compile*: Once a configuration task has been satisfied,
+-  :ref:`ref-tasks-compile`: Once a configuration task has been satisfied,
    BitBake compiles the source using the
    :ref:`ref-tasks-compile` task.
    Compilation occurs in the directory pointed to by the
@@ -848,7 +848,7 @@ This step in the build process consists of the following tasks:
    :term:`B` directory is, by default, the same as the
    :term:`S` directory.
 
--  *do_install*: After compilation completes, BitBake executes the
+-  :ref:`ref-tasks-install`: After compilation completes, BitBake executes the
    :ref:`ref-tasks-install` task.
    This task copies files from the :term:`B` directory and places them in a
    holding area pointed to by the :term:`D`
@@ -956,7 +956,7 @@ package.
 
   For more information on the ``oe-pkgdata-util`` utility, see the section
   :ref:`dev-manual/debugging:Viewing Package Information with
-  \`\`oe-pkgdata-util\`\`` of the Yocto Project Development Tasks Manual.
+  ``oe-pkgdata-util``` of the Yocto Project Development Tasks Manual.
 
 To add a custom package variant of the ``${PN}`` recipe named
 ``${PN}-extra`` (name is arbitrary), one can add it to the
@@ -2204,7 +2204,7 @@ require root privileges, the fact that some earlier steps ran in a fake
 root environment does not cause problems.
 
 The capability to run tasks in a fake root environment is known as
-"`fakeroot <http://man.he.net/man1/fakeroot>`__", which is derived from
+":manpage:`fakeroot <fakeroot(1)>`", which is derived from
 the BitBake keyword/variable flag that requests a fake root environment
 for a task.
 
@@ -2398,8 +2398,8 @@ The contents of ``sayhello_0.1.bb`` are::
    S = "${WORKDIR}/git"
 
    do_install(){
-      install -d ${D}/usr/bin
-      install -m 0700 sayhello ${D}/usr/bin
+      install -d ${D}${bindir}
+      install -m 0700 sayhello ${D}${bindir}
    }
 
 After placing the recipes in a custom layer we can run ``bitbake sayhello``
