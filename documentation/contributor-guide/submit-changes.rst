@@ -656,8 +656,8 @@ backported to a stable branch unless the bug in question does not affect the
 master branch or the fix on the master branch is unsuitable for backporting.
 
 The list of stable branches along with the status and maintainer for each
-branch can be obtained from the
-:yocto_wiki:`Releases wiki page </Releases>`.
+branch can be obtained from the :yocto_home:`Releases </development/releases/>`
+page.
 
 .. note::
 
@@ -711,7 +711,7 @@ Taking Patch Review into Account
 You may get feedback on your submitted patches from other community members
 or from the automated patchtest service. If issues are identified in your
 patches then it is usually necessary to address these before the patches are
-accepted into the project. In this case you should your commits according
+accepted into the project. In this case you should revise your commits according
 to the feedback and submit an updated version to the relevant mailing list.
 
 In any case, never fix reported issues by fixing them in new commits

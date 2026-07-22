@@ -1102,6 +1102,12 @@ system and gives an overview of their function and contents.
       :term:`CCACHE_DISABLE` variable can be set to "1" in a recipe to disable
       `Ccache` support. This is useful when the recipe is known to not support it.
 
+   :term:`CCACHE_TOP_DIR`
+      When inheriting the :ref:`ref-classes-ccache` class, the
+      :term:`CCACHE_TOP_DIR` variable can be set to the location of where
+      `Ccache` stores its cache files. This directory can be shared between
+      builds.
+
    :term:`CFLAGS`
       Specifies the flags to pass to the C compiler. This variable is
       exported to an environment variable and thus made visible to the
@@ -3313,6 +3319,24 @@ system and gives an overview of their function and contents.
       support for a new image type. For more examples on how to set this
       variable, see the :ref:`image_types <ref-classes-image_types>`
       class file, which is ``meta/classes/image_types.bbclass``.
+
+   :term:`IMAGE_CONTAINER_NO_DUMMY`
+      When an image recipe has the ``container`` image type in
+      :term:`IMAGE_FSTYPES`, it expects the :term:`PREFERRED_PROVIDER` for
+      the Linux kernel (``virtual/kernel``) to be set to ``linux-dummy`` from a
+      :term:`configuration file`. Otherwise, an error is triggered.
+
+      When set to "1", the :term:`IMAGE_CONTAINER_NO_DUMMY` variable allows the
+      :term:`PREFERRED_PROVIDER` variable to be set to another value, thus
+      skipping the check and not triggering the build error. Any other value
+      will keep the check.
+
+      This variable should be set from the image recipe using the ``container``
+      image type.
+
+      See the documentation of the :ref:`ref-classes-image-container` class for
+      more information on why setting the :term:`PREFERRED_PROVIDER` to
+      ``linux-dummy`` is advised with this class.
 
    :term:`IMAGE_DEVICE_TABLES`
       Specifies one or more files that contain custom device tables that
@@ -5549,8 +5573,8 @@ system and gives an overview of their function and contents.
 
       .. note::
 
-         An easy way to see what overrides apply is to search for :term:`OVERRIDES`
-         in the output of the ``bitbake -e`` command. See the
+         An easy way to see what overrides apply is to run the command
+         ``bitbake-getvar -r myrecipe OVERRIDES``. See the
          ":ref:`dev-manual/debugging:viewing variable values`" section in the Yocto
          Project Development Tasks Manual for more information.
 
