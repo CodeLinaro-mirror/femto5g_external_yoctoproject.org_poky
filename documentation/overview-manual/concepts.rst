@@ -165,7 +165,7 @@ The following diagram represents the high-level workflow of a build. The
 remainder of this section expands on the fundamental input, output,
 process, and metadata logical blocks that make up the workflow.
 
-.. image:: figures/YP-flow-diagram.png
+.. image:: svg/yp-flow-diagram.*
    :align: center
 
 In general, the build's workflow consists of several functional areas:
@@ -454,7 +454,7 @@ typically find in the distribution layer:
    (``conf/distro/distro.conf``), and any distribution-wide include
    files.
 
--  *recipes-*:* Recipes and append files that affect common
+-  *recipes-\*:* Recipes and append files that affect common
    functionality across the distribution. This area could include
    recipes and append files to add distribution-specific configuration,
    initialization scripts, custom image recipes, and so forth. Examples
