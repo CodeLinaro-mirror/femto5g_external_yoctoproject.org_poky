@@ -18,6 +18,12 @@ SRC_URI = "${GNUPG_MIRROR}/${BPN}/${BPN}-${PV}.tar.bz2 \
            file://0002-use-pkgconfig-instead-of-npth-config.patch \
            file://0004-autogen.sh-fix-find-version-for-beta-checking.patch \
            file://0001-Woverride-init-is-not-needed-with-gcc-9.patch \
+           file://CVE-2025-30258-0001.patch \
+           file://CVE-2025-30258-0002.patch \
+           file://CVE-2025-30258-0003.patch \
+           file://CVE-2025-30258-0004.patch \
+           file://CVE-2025-30258-0005.patch \
+           file://CVE-2025-68973.patch \
            "
 SRC_URI:append:class-native = " file://0001-configure.ac-use-a-custom-value-for-the-location-of-.patch \
                                 file://relocate.patch"
@@ -32,6 +38,7 @@ EXTRA_OECONF = "--disable-ldap \
 		--with-readline=${STAGING_LIBDIR}/.. \
 		--with-mailprog=${sbindir}/sendmail \
 		--enable-gpg-is-gpg2 \
+		--disable-tests \
                "
 
 # A minimal package containing just enough to run gpg+gpgagent (E.g. use gpgme in opkg)
@@ -87,3 +94,5 @@ lcl_maybe_fortify:mipsarch = ""
 
 # upstream-wontfix: Upstream doesn't seem to be keen on merging the proposed commit - https://dev.gnupg.org/T5993
 CVE_CHECK_IGNORE += "CVE-2022-3219"
+# cpe-incorrect: this is vulnerability of libksba and we use fixed libksba version
+CVE_CHECK_IGNORE += "CVE-2022-3515"

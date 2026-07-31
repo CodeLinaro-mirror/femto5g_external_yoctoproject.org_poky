@@ -36,6 +36,41 @@ SRC_URI = "http://cache.ruby-lang.org/pub/ruby/${SHRT_VER}/ruby-${PV}.tar.gz \
            file://CVE-2024-27281.patch \
            file://CVE-2024-27280.patch \
            file://CVE-2024-27282.patch \
+           file://CVE-2024-49761-0001.patch \
+           file://CVE-2024-49761-0002.patch \
+           file://CVE-2024-49761-0003.patch \
+           file://CVE-2024-49761-0004.patch \
+           file://CVE-2024-49761-0005.patch \
+           file://CVE-2024-49761-0006.patch \
+           file://CVE-2024-49761-0007.patch \
+           file://CVE-2024-49761-0008.patch \
+           file://CVE-2024-49761-0009.patch \
+           file://CVE-2024-41946.patch \
+           file://CVE-2025-27220.patch \
+           file://CVE-2025-27219.patch \
+           file://CVE-2024-43398-0001.patch \
+           file://CVE-2024-43398-0002.patch \
+           file://CVE-2024-43398-0003.patch \
+           file://CVE-2025-27221-0001.patch \
+           file://CVE-2025-27221-0002.patch \
+           file://CVE-2024-35176.patch \
+           file://CVE-2024-39908-0001.patch \
+           file://CVE-2024-39908-0002.patch \
+           file://CVE-2024-39908-0003.patch \
+           file://CVE-2024-39908-0004.patch \
+           file://CVE-2024-39908-0005.patch \
+           file://CVE-2024-39908-0006.patch \
+           file://CVE-2024-39908-0007.patch \
+           file://CVE-2024-39908-0008.patch \
+           file://CVE-2024-39908-0009.patch \
+           file://CVE-2024-39908-0010.patch \
+           file://CVE-2024-39908-0011.patch \
+           file://CVE-2024-39908-0012.patch \
+           file://CVE-2024-41123-0001.patch \
+           file://CVE-2024-41123-0002.patch \
+           file://CVE-2024-41123-0003.patch \
+           file://CVE-2024-41123-0004.patch \
+           file://CVE-2024-41123-0005.patch \
            "
 UPSTREAM_CHECK_URI = "https://www.ruby-lang.org/en/downloads/"
 

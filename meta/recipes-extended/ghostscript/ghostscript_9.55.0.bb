@@ -22,9 +22,14 @@ UPSTREAM_CHECK_REGEX = "(?P<pver>\d+(\.\d+)+)\.tar"
 # As of ghostscript 9.54.0 the jpeg issue in the CVE is present in the gs jpeg sources
 # however we use an external jpeg which doesn't have the issue.
 CVE_CHECK_IGNORE += "CVE-2013-6629"
-
 # Issue in the GhostPCL. GhostPCL not part of this GhostScript recipe.
-CVE_CHECK_IGNORE += "CVE-2023-38560"
+CVE_CHECK_IGNORE += "CVE-2023-38560 CVE-2024-46954"
+# Vulnerable code was introduced in 9.56.0, so 9.55.0 is not affected yet
+CVE_CHECK_IGNORE += "CVE-2024-29507 CVE-2025-27833"
+# Only impacts codepaths relevant for Windows builds
+CVE_CHECK_IGNORE += "CVE-2025-27837"
+# Vulnerable code was introduced later, so 9.55.0 is not affected yet
+CVE_CHECK_IGNORE += "CVE-2025-46646"
 
 def gs_verdir(v):
     return "".join(v.split("."))
@@ -57,6 +62,23 @@ SRC_URI_BASE = "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/d
                 file://CVE-2024-29508-1.patch \
                 file://CVE-2024-29508-2.patch \
                 file://CVE-2023-46361.patch \
+                file://CVE-2024-46951.patch \
+                file://CVE-2024-46952.patch \
+                file://CVE-2024-46953.patch \
+                file://CVE-2024-46955.patch \
+                file://CVE-2024-46956.patch \
+                file://CVE-2025-27830.patch \
+                file://CVE-2025-27831-pre1.patch \
+                file://CVE-2025-27831.patch \
+                file://CVE-2025-27832.patch \
+                file://CVE-2025-27834.patch \
+                file://CVE-2025-27835.patch \
+                file://CVE-2025-27836-1.patch \
+                file://CVE-2025-27836-2.patch \
+                file://CVE-2025-48708.patch \
+                file://CVE-2025-59798.patch \
+                file://CVE-2025-59799.patch \
+                file://CVE-2025-59800.patch \
 "
 
 SRC_URI = "${SRC_URI_BASE} \

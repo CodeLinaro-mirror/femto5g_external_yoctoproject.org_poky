@@ -328,6 +328,15 @@ Once the build process gets the sample file, it uses ``sed`` to substitute final
 This file indicates the state of the sanity checks and is created during
 the build.
 
+.. _structure-build-conf-auto.conf:
+
+``build/conf/auto.conf``
+------------------------
+
+This file contains configuration variables that are automatically modified by
+tools such as :oe_git:`bitbake-config-build </bitbake/tree/bin/bitbake-config-build>`.
+This file should not be modified manually.
+
 .. _structure-build-downloads:
 
 ``build/downloads/``
@@ -498,7 +507,7 @@ generated during the :ref:`ref-tasks-packagedata` task. The files stored in this
 directory contain information about each output package produced by the
 OpenEmbedded build system, and are used in different ways by the build system
 such as ":ref:`dev-manual/debugging:viewing package information with
-\`\`oe-pkgdata-util\`\``".
+``oe-pkgdata-util```".
 
 .. _structure-build-tmp-sstate-control:
 
