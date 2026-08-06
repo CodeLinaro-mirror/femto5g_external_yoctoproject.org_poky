@@ -23,6 +23,7 @@ SRC_URI = "${GNUPG_MIRROR}/${BPN}/${BPN}-${PV}.tar.bz2 \
            file://CVE-2025-30258-0003.patch \
            file://CVE-2025-30258-0004.patch \
            file://CVE-2025-30258-0005.patch \
+           file://CVE-2025-68973.patch \
            "
 SRC_URI:append:class-native = " file://0001-configure.ac-use-a-custom-value-for-the-location-of-.patch \
                                 file://relocate.patch"
@@ -37,6 +38,7 @@ EXTRA_OECONF = "--disable-ldap \
 		--with-readline=${STAGING_LIBDIR}/.. \
 		--with-mailprog=${sbindir}/sendmail \
 		--enable-gpg-is-gpg2 \
+		--disable-tests \
                "
 
 # A minimal package containing just enough to run gpg+gpgagent (E.g. use gpgme in opkg)
