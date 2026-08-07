@@ -18,7 +18,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 
 SHRT_VER = "${@d.getVar('PV').split('.')[0]}.${@d.getVar('PV').split('.')[1]}"
 
-SRC_URI = "http://ftp.gnome.org/pub/GNOME/sources/${BPN}/${SHRT_VER}/${BP}.tar.xz"
+SRC_URI = "${GNOME_MIRROR}/${BPN}/${SHRT_VER}/${BP}.tar.xz"
 inherit autotools pkgconfig upstream-version-is-even
 
 FILES:${PN} += "${datadir}/${BPN}-${SHRT_VER}/vapi ${libdir}/${BPN}-${SHRT_VER}/"
@@ -38,6 +38,10 @@ EOF
 }
 
 EXTRA_OECONF += " --disable-valadoc"
+
+# work around for vala-native build with gcc-14 instead of backporting
+# https://gitlab.gnome.org/GNOME/vala/-/commit/23ec71b1a5c4cead3d1bdac82e184d0a63fa7b79
+BUILD_CFLAGS += "-Wno-error=incompatible-pointer-types"
 
 # Vapigen wrapper needs to be available system-wide, because it will be used
 # to build vapi files from all other packages with vala support

@@ -21,6 +21,7 @@ SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.x
            file://0002-tests-add-support-for-install-the-tests.patch;striplevel=3 \
            file://0003-tests-use-a-dictionaries-for-environment.patch;striplevel=3 \
            file://0004-tests-add-helper-script-to-run-the-installed_tests.patch;striplevel=3 \
+           file://CVE-2024-47606.patch \
            "
 SRC_URI[sha256sum] = "1757184a07b9703219e8b1961f81cb1dd64320d147fc045ac8eb499efbea79be"
 
@@ -68,5 +69,26 @@ FILES:${PN}-bash-completion += "${datadir}/bash-completion/completions/ ${datadi
 FILES:${PN}-dbg += "${datadir}/gdb ${datadir}/gstreamer-1.0/gdb"
 
 CVE_PRODUCT = "gstreamer"
+
+# these CVEs are patched in gstreamer1.0-plugins-bad
+CVE_CHECK_IGNORE += "\
+    CVE-2023-40474 CVE-2023-40475 CVE-2023-40476 CVE-2023-44429 CVE-2023-44446 CVE-2023-50186 CVE-2024-0444 \
+    CVE-2025-3887 \
+"
+# these CVEs are patched in gstreamer1.0-plugins-base
+CVE_CHECK_IGNORE += " \
+    CVE-2024-47538 CVE-2024-47541 CVE-2024-47542 CVE-2024-47600 CVE-2024-47607 CVE-2024-47615 CVE-2024-47835 \
+    CVE-2025-47806 CVE-2025-47807 CVE-2025-47808 \
+"
+# these CVEs are patched in gstreamer1.0-plugins-good
+CVE_CHECK_IGNORE += " \
+    CVE-2024-47537 CVE-2024-47539 CVE-2024-47540 CVE-2024-47543 CVE-2024-47544 CVE-2024-47545 \
+    CVE-2024-47546 CVE-2024-47596 CVE-2024-47597 CVE-2024-47598 CVE-2024-47599 CVE-2024-47601 \
+    CVE-2024-47602 CVE-2024-47603 CVE-2024-47613 CVE-2024-47774 CVE-2024-47775 CVE-2024-47776 \
+    CVE-2024-47777 CVE-2024-47778 CVE-2024-47834 CVE-2025-47183 CVE-2025-47219 \
+"
+
+# not-applicable-platform: affects installation packages for non Linux OSes
+CVE_CHECK_IGNORE += "CVE-2025-2759"
 
 PTEST_BUILD_HOST_FILES = ""

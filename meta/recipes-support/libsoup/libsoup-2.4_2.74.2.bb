@@ -11,7 +11,39 @@ DEPENDS = "glib-2.0 glib-2.0-native libxml2 sqlite3 libpsl"
 
 SHRT_VER = "${@d.getVar('PV').split('.')[0]}.${@d.getVar('PV').split('.')[1]}"
 
-SRC_URI = "${GNOME_MIRROR}/libsoup/${SHRT_VER}/libsoup-${PV}.tar.xz"
+SRC_URI = "${GNOME_MIRROR}/libsoup/${SHRT_VER}/libsoup-${PV}.tar.xz \
+           file://0001-meson.build-set-c_std-to-gnu99.patch \
+           file://CVE-2024-52530.patch \
+           file://CVE-2024-52532-1.patch \
+           file://CVE-2024-52532-2.patch \
+           file://CVE-2024-52532-3.patch \
+           file://CVE-2024-52531-1.patch \
+           file://CVE-2024-52531-2.patch \
+           file://CVE-2025-32906-1.patch \
+           file://CVE-2025-32906-2.patch \
+           file://CVE-2025-32909.patch \
+           file://CVE-2025-46420.patch \
+           file://CVE-2025-32910-1.patch \
+           file://CVE-2025-32910-2.patch \
+           file://CVE-2025-32910-3.patch \
+           file://Backport-auth-tests-for-CVE-2025-32910.patch \
+           file://CVE-2025-32911_CVE-2025-32913-1.patch \
+           file://CVE-2025-32911_CVE-2025-32913-2.patch \
+           file://CVE-2025-32912-1.patch \
+           file://CVE-2025-32912-2.patch \
+           file://CVE-2025-32914.patch \
+           file://CVE-2025-2784-1.patch \
+           file://CVE-2025-2784-2.patch \
+           file://CVE-2025-32050.patch \
+           file://CVE-2025-32052.patch \
+           file://CVE-2025-32053.patch \
+           file://CVE-2025-4969.patch \
+           file://CVE-2025-32907.patch \
+           file://CVE-2025-46421.patch \
+           file://CVE-2025-4948.patch \
+           file://CVE-2025-4476.patch \
+           file://CVE-2025-4945.patch \
+          "
 SRC_URI[sha256sum] = "f0a427656e5fe19e1df71c107e88dfa1b2e673c25c547b7823b6018b40d01159"
 
 CVE_PRODUCT = "libsoup"

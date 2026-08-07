@@ -18,7 +18,7 @@ SRCBRANCH ?= "binutils-2_38-branch"
 
 UPSTREAM_CHECK_GITTAGREGEX = "binutils-(?P<pver>\d+_(\d_?)*)"
 
-SRCREV ?= "ea5fe5d01e5a182ee7a0eddb54a702109a9f5931"
+SRCREV ?= "9bee8d65d32ac1480997c13ce76ae7991180f1ed"
 BINUTILS_GIT_URI ?= "git://sourceware.org/git/binutils-gdb.git;branch=${SRCBRANCH};protocol=git"
 SRC_URI = "\
      ${BINUTILS_GIT_URI} \
@@ -71,5 +71,25 @@ SRC_URI = "\
      file://0034-CVE-2022-48064.patch \
      file://0035-CVE-2023-39129.patch \
      file://0036-CVE-2023-39130.patch \
+     file://0037-CVE-2024-53589.patch \
+     file://0038-CVE-2025-0840.patch \
+     file://0039-CVE-2025-1178.patch \
+     file://0040-CVE-2025-1180.patch \
+     file://0040-CVE-2025-1182.patch \
+     file://0041-CVE-2025-5244.patch \
+     file://0042-CVE-2025-5245.patch \
+     file://0043-CVE-2025-7546.patch \
+     file://0043-CVE-2025-7545.patch \
+     file://0044-CVE-2025-11082.patch \
+     file://0045-CVE-2025-11083.patch \
+     file://0046-CVE-2025-11081.patch \
+     file://0047-CVE-2025-8225.patch \
+     file://CVE-2025-11412.patch \
+     file://CVE-2025-11413.patch \
+     file://0048-CVE-2025-11494.patch \
+     file://0049-CVE-2025-11839.patch \
+     file://0050-CVE-2025-11840.patch \
+     file://CVE-2025-1181-pre.patch \
+     file://CVE-2025-1181.patch \
 "
 S  = "${WORKDIR}/git"

@@ -31,6 +31,27 @@ EXTRA_OECONF += "--enable-largefile --without-iconv"
 SRC_URI = "http://libarchive.org/downloads/libarchive-${PV}.tar.gz \
            file://0001-pax-writer-fix-multiple-security-vulnerabilities.patch \
            file://CVE-2024-26256.patch \
+           file://CVE-2024-48957.patch \
+           file://CVE-2024-48958.patch \
+           file://CVE-2024-20696.patch \
+           file://CVE-2025-25724.patch \
+           file://CVE-2025-5914.patch \
+           file://CVE-2025-5915.patch \
+           file://CVE-2025-5916.patch \
+           file://CVE-2025-5917.patch \
+           file://0001-FILE-seeking-support-2539.patch \
+           file://0001-Improve-lseek-handling-2564.patch \
+           file://CVE-2025-5918-01.patch \
+           file://CVE-2025-5918-02.patch \
+           file://0001-Fix-max-path-length-metadata-writing-2243.patch \
+           file://0001-Merge-pull-request-2696-from-al3xtjames-mkstemp.patch \
+           file://0001-Merge-pull-request-2749-from-KlaraSystems-des-tempdi.patch \
+           file://0001-Merge-pull-request-2753-from-KlaraSystems-des-temp-f.patch \
+           file://0001-Merge-pull-request-2768-from-Commandoss-master.patch \
+           file://CVE-2025-60753-01.patch \
+           file://CVE-2025-60753-02.patch \
+           file://CVE-2026-4111-1.patch \
+           file://CVE-2026-4111-2.patch \
            "
 UPSTREAM_CHECK_URI = "http://libarchive.org/"
 
@@ -38,6 +59,12 @@ SRC_URI[sha256sum] = "ba6d02f15ba04aba9c23fd5f236bb234eab9d5209e95d1c4df85c44d5f
 
 # upstream-wontfix: upstream has documented that reported function is not thread-safe
 CVE_CHECK_IGNORE += "CVE-2023-30571"
+# cpe-incorrect: this vulnerability was not in any release; introduced in v3.7.3-14-g91f27004; fixed in b6a97948
+CVE_CHECK_IGNORE += "CVE-2024-37407"
+# cpe-incorrect: bsdtar was introduced in v3.7.0, so 3.6.2 is not affected yet
+CVE_CHECK_IGNORE += "CVE-2025-1632"
+# cpe-incorrect: vulnerable code introduced in v3.7.5, so 3.6.2 is not affected yet
+CVE_CHECK_IGNORE += "CVE-2024-48615"
 
 inherit autotools update-alternatives pkgconfig
 

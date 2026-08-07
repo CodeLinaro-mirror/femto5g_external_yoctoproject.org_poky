@@ -97,18 +97,39 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2023-3301.patch \
            file://CVE-2023-3255.patch \
            file://CVE-2023-2861.patch \
-	   file://CVE-2020-14394.patch \
-	   file://CVE-2023-3354.patch \
-	   file://CVE-2023-3180.patch \
-	   file://CVE-2021-3638.patch \
-	   file://CVE-2023-1544.patch \
-	   file://CVE-2023-5088.patch \
-	   file://CVE-2024-24474.patch \
-	   file://CVE-2023-6693.patch \
+           file://CVE-2020-14394.patch \
+           file://CVE-2023-3354.patch \
+           file://CVE-2023-3180.patch \
+           file://CVE-2021-3638.patch \
+           file://CVE-2023-1544.patch \
+           file://CVE-2023-5088.patch \
+           file://CVE-2024-24474.patch \
+           file://CVE-2023-6693.patch \
            file://scsi-disk-allow-MODE-SELECT-block-desriptor-to-set-the-block-size.patch \
            file://scsi-disk-ensure-block-size-is-non-zero-and-changes-limited-to-bits-8-15.patch \
            file://CVE-2023-42467.patch \
            file://CVE-2023-6683.patch \
+           file://CVE-2024-7409-0001.patch \
+           file://CVE-2024-7409-0002.patch \
+           file://CVE-2024-7409-0003.patch \
+           file://CVE-2024-7409-0004.patch \
+           file://CVE-2024-4467-0001.patch \
+           file://CVE-2024-4467-0002.patch \
+           file://CVE-2024-4467-0003.patch \
+           file://CVE-2024-4467-0004.patch \
+           file://CVE-2024-4467-0005.patch \
+           file://CVE-2023-3019-0001.patch \
+           file://CVE-2023-3019-0002.patch \
+           file://CVE-2024-6505.patch \
+           file://CVE-2024-3446-0001.patch \
+           file://CVE-2024-3446-0002.patch \
+           file://CVE-2024-3446-0003.patch \
+           file://CVE-2024-3446-0004.patch \
+           file://CVE-2024-3446-0005.patch \
+           file://CVE-2024-3446-0006.patch \
+           file://CVE-2024-3447.patch \
+           file://CVE-2024-8354.patch \
+           file://CVE-2025-12464.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -136,6 +157,20 @@ CVE_CHECK_IGNORE += "CVE-2023-0664"
 # As per https://bugzilla.redhat.com/show_bug.cgi?id=2203387
 # RHEL specific issue
 CVE_CHECK_IGNORE += "CVE-2023-2680"
+
+# The CVE has disputed flag in NVD DB and also descrition contains:
+# Note: This has been disputed by multiple third parties as not a valid vulnerability
+#       due to the rocker device not falling within the virtualization use case.
+CVE_CHECK_IGNORE += "CVE-2022-36648"
+
+# disputed: not an issue as per https://bugzilla.redhat.com/show_bug.cgi?id=2223985
+CVE_CHECK_IGNORE += "CVE-2023-1386"
+
+# virtio-snd was implemented in 8.2.0, so version 6.2.0 is not yet affected
+CVE_CHECK_IGNORE += "CVE-2024-7730"
+
+# These issues were introduced in v10.0.0-rc0
+CVE_CHECK_IGNORE += "CVE-2025-54566 CVE-2025-54567"
 
 COMPATIBLE_HOST:mipsarchn32 = "null"
 COMPATIBLE_HOST:mipsarchn64 = "null"

@@ -63,7 +63,7 @@ universal, the list includes them just in case:
       This term refers to the area used by the OpenEmbedded build system for
       builds. The area is created when you ``source`` the setup environment
       script that is found in the Source Directory
-      (i.e. :ref:`ref-manual/structure:\`\`oe-init-build-env\`\``). The
+      (i.e. :ref:`ref-manual/structure:``oe-init-build-env```). The
       :term:`TOPDIR` variable points to the Build Directory.
 
       You have a lot of flexibility when creating the :term:`Build Directory`.
@@ -450,7 +450,7 @@ universal, the list includes them just in case:
      the Source Directory, if you do, the top-level directory name of the
      Source Directory is derived from the Yocto Project release tarball.
      For example, downloading and unpacking poky tarballs from
-     :yocto_dl:`/releases/yocto/&DISTRO_REL_TAG;/`
+     :yocto_dl:`/releases/yocto/&DISTRO_REL_LATEST_TAG;/`
      results in a Source Directory whose root folder is named poky.
 
 
@@ -482,6 +482,31 @@ universal, the list includes them just in case:
       For details, see Wikipedia's :wikipedia:`SPDX page <Software_Package_Data_Exchange>`
       and the ":ref:`dev-manual/sbom:creating a software bill of materials`"
       section of the Development Tasks manual.
+
+   :term:`Sysroot`
+      When cross-compiling, the target file system may be differently laid
+      out and contain different things compared to the host system. The concept
+      of a *sysroot* is directory which looks like the target filesystem and
+      can be used to cross-compile against.
+
+      In the context of cross-compiling toolchains, a *sysroot*
+      typically contains C library and kernel headers, plus the
+      compiled binaries for the C library. A *multilib toolchain*
+      can contain multiple variants of the C library binaries,
+      each compiled for a target instruction set (such as ``armv5``,
+      ``armv7`` and ``armv8``), and possibly optimized for a specific CPU core.
+
+      In the more specific context of the OpenEmbedded build System and
+      of the Yocto Project, each recipe has two sysroots:
+
+      -  A *target sysroot* contains all the **target** libraries and headers
+         needed to build the recipe.
+
+      -  A *native sysroot* contains all the **host** files and executables
+         needed to build the recipe.
+
+      See the :term:`SYSROOT_* <SYSROOT_DESTDIR>` variables controlling
+      how sysroots are created and stored.
 
    :term:`Task`
       A per-recipe unit of execution for BitBake (e.g.

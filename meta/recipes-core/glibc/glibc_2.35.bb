@@ -27,6 +27,8 @@ CVE_CHECK_IGNORE += "CVE-2023-4527"
 CVE_CHECK_IGNORE += " \
     CVE-2023-0687 CVE-2023-4813 CVE-2023-4806 CVE-2023-4911 CVE-2023-5156 \
     CVE-2024-2961 CVE-2024-33599 CVE-2024-33600 CVE-2024-33601 CVE-2024-33602 \
+    CVE-2025-0395 CVE-2025-4802 CVE-2025-8058 CVE-2025-15281 \
+    CVE-2026-0861 CVE-2026-0915 \
 "
 
 DEPENDS += "gperf-native bison-native"
@@ -61,9 +63,21 @@ SRC_URI =  "${GLIBC_GIT_URI};branch=${SRCBRANCH};name=glibc \
            file://0022-sysdeps-gnu-configure.ac-Set-libc_cv_rootsbindir-onl.patch \
            file://0023-timezone-Make-shell-interpreter-overridable-in-tzsel.patch \
            file://0024-fix-create-thread-failed-in-unprivileged-process-BZ-.patch \
+           file://0026-PR25847-1.patch \
+           file://0026-PR25847-2.patch \
+           file://0026-PR25847-3.patch \
+           file://0026-PR25847-4.patch \
+           file://0026-PR25847-5.patch \
+           file://0026-PR25847-6.patch \
+           file://0026-PR25847-7.patch \
+           file://0026-PR25847-8.patch \
+           file://0026-PR25847-9.patch \
+           file://0026-PR25847-10.patch \
            \
            file://0001-Revert-Linux-Implement-a-useful-version-of-_startup_.patch \
            file://0002-get_nscd_addresses-Fix-subscript-typos-BZ-29605.patch \
+           file://0003-sunrpc-suppress-gcc-os-warning-on-user2netname.patch \
+           file://0001-stdlib-Add-single-threaded-fast-path-to-rand.patch \
            "
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build-${TARGET_SYS}"

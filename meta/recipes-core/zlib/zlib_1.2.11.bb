@@ -13,6 +13,7 @@ SRC_URI = "${SOURCEFORGE_MIRROR}/libpng/${BPN}/${PV}/${BPN}-${PV}.tar.xz \
            file://run-ptest \
 	    file://CVE-2022-37434.patch \
            file://CVE-2023-45853.patch \
+           file://CVE-2014-9485.patch \
            "
 UPSTREAM_CHECK_URI = "http://zlib.net/"
 
@@ -57,3 +58,5 @@ BBCLASSEXTEND = "native nativesdk"
 
 # this CVE is for cloudflare zlib
 CVE_CHECK_IGNORE += "CVE-2023-6992"
+# vulnerable file is not compiled
+CVE_CHECK_IGNORE += "CVE-2026-22184"

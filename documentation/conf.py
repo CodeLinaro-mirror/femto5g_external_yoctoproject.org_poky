@@ -13,6 +13,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import re
 import sys
 import datetime
 try:
@@ -90,8 +91,9 @@ rst_prolog = """
 
 # external links and substitutions
 extlinks = {
-    'cve': ('https://nvd.nist.gov/vuln/detail/CVE-%s', 'CVE-%s'),
+    'bitbake_git': ('https://git.openembedded.org/bitbake%s', None),
     'cve_mitre': ('https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-%s', 'CVE-%s'),
+    'cve_nist': ('https://nvd.nist.gov/vuln/detail/CVE-%s', 'CVE-%s'),
     'yocto_home': ('https://www.yoctoproject.org%s', None),
     'yocto_wiki': ('https://wiki.yoctoproject.org/wiki%s', None),
     'yocto_dl': ('https://downloads.yoctoproject.org%s', None),
@@ -135,6 +137,7 @@ except ImportError:
     sys.exit(1)
 
 html_logo = 'sphinx-static/YoctoProject_Logo_RGB.jpg'
+html_favicon = 'sphinx-static/favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -162,6 +165,24 @@ latex_elements = {
     'passoptionstopackages': '\\PassOptionsToPackage{bookmarksdepth=5}{hyperref}',
     'preamble': '\\setcounter{tocdepth}{2}',
 }
+
+
+from sphinx.search import SearchEnglish
+from sphinx.search import languages
+class DashFriendlySearchEnglish(SearchEnglish):
+
+    # Accept words that can include 'inner' hyphens or dots
+    _word_re = re.compile(r'[\w]+(?:[\.\-][\w]+)*')
+
+    js_splitter_code = r"""
+function splitQuery(query) {
+    return query
+        .split(/[^\p{Letter}\p{Number}_\p{Emoji_Presentation}\-\.]+/gu)
+        .filter(term => term.length > 0);
+}
+"""
+
+languages['en'] = DashFriendlySearchEnglish
 
 # Make the EPUB builder prefer PNG to SVG because of issues rendering Inkscape SVG
 from sphinx.builders.epub3 import Epub3Builder

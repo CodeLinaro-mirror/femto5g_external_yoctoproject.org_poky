@@ -12,7 +12,7 @@ Features provide a mechanism for working out which packages should be
 included in the generated images. Distributions can select which
 features they want to support through the :term:`DISTRO_FEATURES` variable,
 which is set or appended to in a distribution's configuration file such
-as ``poky.conf``, ``poky-tiny.conf``, ``poky-lsb.conf`` and so forth.
+as ``poky.conf``, ``poky-tiny.conf``, ``poky-altcfg.conf`` and so forth.
 Machine features are set in the :term:`MACHINE_FEATURES` variable, which is
 set in the machine configuration file and specifies the hardware
 features for a given machine.
@@ -129,7 +129,7 @@ metadata:
 
 -  *directfb:* Include DirectFB support.
 
--  *ext2:* Include tools for supporting for devices with internal
+-  *ext2:* Include tools for supporting devices with internal
    HDD/Microdrive for storing files (instead of Flash only devices).
 
 -  *ipsec:* Include IPSec support.
@@ -157,7 +157,7 @@ metadata:
 
 -  *ptest:* Enables building the package tests where supported by
    individual recipes. For more information on package tests, see the
-   ":ref:`dev-manual/packages:testing packages with ptest`" section
+   ":ref:`test-manual/ptest:testing packages with ptest`" section
    in the Yocto Project Development Tasks Manual.
 
 -  *smbfs:* Include SMB networks client support (for mounting

@@ -35,11 +35,15 @@ SRC_URI = "${KERNELORG_MIRROR}/linux/utils/util-linux/v${MAJOR_VERSION}/util-lin
            file://run-ptest \
            file://display_testname_for_subtest.patch \
            file://avoid_parallel_tests.patch \
+           file://0001-check-for-sys-pidfd.h.patch \
            file://CVE-2024-28085-0001.patch \
            file://CVE-2024-28085-0002.patch \
            file://CVE-2024-28085-0003.patch \
            file://CVE-2024-28085-0004.patch \
            file://CVE-2024-28085-0005.patch \
+	   file://fstab-isolation.patch \
+           file://CVE-2025-14104-01.patch \
+           file://CVE-2025-14104-02.patch \
            "
 
 SRC_URI[sha256sum] = "634e6916ad913366c3536b6468e7844769549b99a7b2bf80314de78ab5655b83"

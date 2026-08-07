@@ -135,7 +135,7 @@ system and gives an overview of their function and contents.
       appear in :term:`DISTRO_FEATURES` within the current configuration, then
       the recipe will be skipped, and if the build system attempts to build
       the recipe then an error will be triggered.
-      
+
 
    :term:`APPEND`
       An override list of append strings for each target specified with
@@ -230,6 +230,12 @@ system and gives an overview of their function and contents.
       Enables creating an automatic menu for the syslinux bootloader. You
       must set this variable in your recipe. The
       :ref:`syslinux <ref-classes-syslinux>` class checks this variable.
+
+   :term:`AUTOTOOLS_SCRIPT_PATH`
+      When using the :ref:`ref-classes-autotools` class, the
+      :term:`AUTOTOOLS_SCRIPT_PATH` variable stores the location of the
+      different scripts used by the Autotools build system. The default
+      value for this variable is :term:`S`.
 
    :term:`AVAILTUNES`
       The list of defined CPU and Application Binary Interface (ABI)
@@ -1091,6 +1097,17 @@ system and gives an overview of their function and contents.
    :term:`CC`
       The minimal command and arguments used to run the C compiler.
 
+   :term:`CCACHE_DISABLE`
+      When inheriting the :ref:`ref-classes-ccache` class, the
+      :term:`CCACHE_DISABLE` variable can be set to "1" in a recipe to disable
+      `Ccache` support. This is useful when the recipe is known to not support it.
+
+   :term:`CCACHE_TOP_DIR`
+      When inheriting the :ref:`ref-classes-ccache` class, the
+      :term:`CCACHE_TOP_DIR` variable can be set to the location of where
+      `Ccache` stores its cache files. This directory can be shared between
+      builds.
+
    :term:`CFLAGS`
       Specifies the flags to pass to the C compiler. This variable is
       exported to an environment variable and thus made visible to the
@@ -1332,6 +1349,17 @@ system and gives an overview of their function and contents.
    :term:`CONFIGURE_FLAGS`
       The minimal arguments for GNU configure.
 
+   :term:`CONFIGURE_SCRIPT`
+      When using the :ref:`ref-classes-autotools` class, the
+      :term:`CONFIGURE_SCRIPT` variable stores the location of the ``configure``
+      script for the Autotools build system. The default definition for this
+      variable is::
+
+         CONFIGURE_SCRIPT ?= "${AUTOTOOLS_SCRIPT_PATH}/configure"
+
+      Where :term:`AUTOTOOLS_SCRIPT_PATH` is the location of the of the
+      Autotools build system scripts, which defaults to :term:`S`.
+
    :term:`CONFLICT_DISTRO_FEATURES`
       When inheriting the
       :ref:`features_check <ref-classes-features_check>`
@@ -1521,12 +1549,26 @@ system and gives an overview of their function and contents.
          variable only in certain contexts (e.g. when building for kernel
          and kernel module recipes).
 
+   :term:`CVE_CHECK_CREATE_MANIFEST`
+      Specifies whether to create a CVE manifest to place in the deploy
+      directory. The default is "1".
+
    :term:`CVE_CHECK_IGNORE`
       The list of CVE IDs which are ignored. Here is
       an example from the :oe_layerindex:`Python3 recipe</layerindex/recipe/23823>`::
 
          # This is windows only issue.
          CVE_CHECK_IGNORE += "CVE-2020-15523"
+
+   :term:`CVE_CHECK_MANIFEST_JSON`
+      Specifies the path to the CVE manifest in JSON format. See
+      :term:`CVE_CHECK_CREATE_MANIFEST`.
+
+   :term:`CVE_CHECK_REPORT_PATCHED`
+      Specifies whether or not the :ref:`ref-classes-cve-check`
+      class should report patched or ignored CVEs. The default is "1", but you
+      may wish to set it to "0" if you do not need patched or ignored CVEs in
+      the logs.
 
    :term:`CVE_CHECK_SHOW_WARNINGS`
       Specifies whether or not the :ref:`cve-check <ref-classes-cve-check>`
@@ -1775,7 +1817,7 @@ system and gives an overview of their function and contents.
       ``${TMPDIR}/deploy``.
 
       For more information on the structure of the Build Directory, see
-      ":ref:`ref-manual/structure:the build directory --- \`\`build/\`\``" section.
+      ":ref:`ref-manual/structure:the build directory --- ``build/```" section.
       For more detail on the contents of the ``deploy`` directory, see the
       ":ref:`overview-manual/concepts:images`",
       ":ref:`overview-manual/concepts:package feeds`", and
@@ -1819,7 +1861,7 @@ system and gives an overview of their function and contents.
       <ref-classes-image>` class.
 
       For more information on the structure of the Build Directory, see
-      ":ref:`ref-manual/structure:the build directory --- \`\`build/\`\``" section.
+      ":ref:`ref-manual/structure:the build directory --- ``build/```" section.
       For more detail on the contents of the ``deploy`` directory, see the
       ":ref:`overview-manual/concepts:images`" and
       ":ref:`overview-manual/concepts:application development sdk`" sections both in
@@ -2293,6 +2335,18 @@ system and gives an overview of their function and contents.
       :ref:`kernel-yocto <ref-classes-kernel-yocto>` class in
       ``meta/classes`` to see how the variable is used.
 
+   :term:`EXTERNAL_KERNEL_DEVICETREE`
+      When inheriting :ref:`ref-classes-kernel-fitimage` and a
+      :term:`PREFERRED_PROVIDER` for ``virtual/dtb`` set to ``devicetree``, the
+      variable :term:`EXTERNAL_KERNEL_DEVICETREE` can be used to specify a
+      directory containing one or more compiled device tree or device tree
+      overlays to use.
+
+      Using this variable is only useful when you are using a kernel recipe
+      inheriting the :ref:`ref-classes-kernel` class, and which doesn't
+      already set a local version. Therefore, setting this variable has no
+      impact on ``linux-yocto`` kernels.
+
    :term:`EXTERNAL_TOOLCHAIN`
       When you intend to use an
       :ref:`external toolchain <dev-manual/external-toolchain:optionally using an external toolchain>`,
@@ -2483,8 +2537,8 @@ system and gives an overview of their function and contents.
       .. note::
 
          From a security perspective, hardcoding a default password is not
-         generally a good idea or even legal in some jurisdictions. It is 
-         recommended that you do not do this if you are building a production 
+         generally a good idea or even legal in some jurisdictions. It is
+         recommended that you do not do this if you are building a production
          image.
 
       Additionally there is a special ``passwd-expire`` command that will
@@ -2757,6 +2811,10 @@ system and gives an overview of their function and contents.
 
       For guidance on how to create your own file permissions settings
       table file, examine the existing ``fs-perms.txt``.
+
+   :term:`FIT_CONF_PREFIX`
+      When using the :ref:`ref-classes-kernel-fitimage`, this is the prefix
+      used for creating FIT configuration nodes. Its default value is "conf-".
 
    :term:`FIT_DESC`
       Specifies the description string encoded into a fitImage. The default
@@ -3262,6 +3320,24 @@ system and gives an overview of their function and contents.
       variable, see the :ref:`image_types <ref-classes-image_types>`
       class file, which is ``meta/classes/image_types.bbclass``.
 
+   :term:`IMAGE_CONTAINER_NO_DUMMY`
+      When an image recipe has the ``container`` image type in
+      :term:`IMAGE_FSTYPES`, it expects the :term:`PREFERRED_PROVIDER` for
+      the Linux kernel (``virtual/kernel``) to be set to ``linux-dummy`` from a
+      :term:`configuration file`. Otherwise, an error is triggered.
+
+      When set to "1", the :term:`IMAGE_CONTAINER_NO_DUMMY` variable allows the
+      :term:`PREFERRED_PROVIDER` variable to be set to another value, thus
+      skipping the check and not triggering the build error. Any other value
+      will keep the check.
+
+      This variable should be set from the image recipe using the ``container``
+      image type.
+
+      See the documentation of the :ref:`ref-classes-image-container` class for
+      more information on why setting the :term:`PREFERRED_PROVIDER` to
+      ``linux-dummy`` is advised with this class.
+
    :term:`IMAGE_DEVICE_TABLES`
       Specifies one or more files that contain custom device tables that
       are passed to the ``makedevs`` command as part of creating an image.
@@ -3488,6 +3564,12 @@ system and gives an overview of their function and contents.
       added to the image by using the :term:`IMAGE_ROOTFS_EXTRA_SPACE`
       variable.
 
+      When using Wic tool, beware that a second overhead factor is also applied.
+      This overhead value is defined by the ``--overhead-factor`` option, which
+      defaults to "1.3" when omitted. See the
+      :ref:`ref-manual/kickstart:command: part or partition` chapter in
+      :doc:`/ref-manual/kickstart` for details.
+
    :term:`IMAGE_PKGTYPE`
       Defines the package type (i.e. DEB, RPM, IPK, or TAR) used by the
       OpenEmbedded build system. The variable is defined appropriately by
@@ -3573,6 +3655,36 @@ system and gives an overview of their function and contents.
       40 Gbytes of extra space with the line::
 
          IMAGE_ROOTFS_EXTRA_SPACE = "41943040"
+
+   :term:`IMAGE_ROOTFS_MAXSIZE`
+      Defines the maximum allowed size of the generated image in kilobytes.
+      The build will fail if the generated image size exceeds this value.
+
+      The generated image size undergoes several calculation steps before being
+      compared to :term:`IMAGE_ROOTFS_MAXSIZE`.
+      In the first step, the size of the directory pointed to by :term:`IMAGE_ROOTFS`
+      is calculated.
+      In the second step, the result from the first step is multiplied
+      by :term:`IMAGE_OVERHEAD_FACTOR`.
+      In the third step, the result from the second step is compared with
+      :term:`IMAGE_ROOTFS_SIZE`. The larger value of these is added to
+      :term:`IMAGE_ROOTFS_EXTRA_SPACE`.
+      In the fourth step, the result from the third step is checked for
+      a decimal part. If it has one, it is rounded up to the next integer.
+      If it does not, it is simply converted into an integer.
+      In the fifth step, the :term:`IMAGE_ROOTFS_ALIGNMENT` is added to the result
+      from the fourth step and "1" is subtracted.
+      In the sixth step, the remainder of the division between the result
+      from the fifth step and :term:`IMAGE_ROOTFS_ALIGNMENT` is subtracted from the
+      result of the fifth step. In this way, the result from the fourth step is
+      rounded up to the nearest multiple of :term:`IMAGE_ROOTFS_ALIGNMENT`.
+
+      Thus, if the :term:`IMAGE_ROOTFS_MAXSIZE` is set, is compared with the result
+      of the above calculations and is independent of the final image type.
+      No default value is set for :term:`IMAGE_ROOTFS_MAXSIZE`.
+
+      It's a good idea to set this variable for images that need to fit on a limited
+      space (e.g. SD card, a fixed-size partition, ...).
 
    :term:`IMAGE_ROOTFS_SIZE`
       Defines the size in Kbytes for the generated image. The OpenEmbedded
@@ -3779,6 +3891,23 @@ system and gives an overview of their function and contents.
       Set the variable to "1" to prevent the default dependencies from
       being added.
 
+   :term:`INHIBIT_DEFAULT_RUST_DEPS`
+      Prevents the :ref:`ref-classes-rust` class from automatically adding
+      its default build-time dependencies.
+
+      When a recipe inherits the :ref:`ref-classes-rust` class, several
+      tools such as ``rust-native`` and ``${RUSTLIB_DEP}`` (only added when cross-compiling) are added
+      to :term:`DEPENDS` to support the ``rust`` build process.
+
+      To prevent the build system from adding these dependencies automatically,
+      set the :term:`INHIBIT_DEFAULT_RUST_DEPS` variable as follows::
+
+         INHIBIT_DEFAULT_RUST_DEPS = "1"
+
+      By default, the value of :term:`INHIBIT_DEFAULT_RUST_DEPS` is empty. Setting
+      it to "0" does not disable inhibition. Only the empty string will disable
+      inhibition.
+
    :term:`INHIBIT_PACKAGE_DEBUG_SPLIT`
       Prevents the OpenEmbedded build system from splitting out debug
       information during packaging. By default, the build system splits out
@@ -3825,6 +3954,25 @@ system and gives an overview of their function and contents.
          bare-metal firmware by using an external GCC toolchain. Furthermore,
          even if the toolchain's binaries are strippable, there are other files
          needed for the build that are not strippable.
+
+   :term:`INHIBIT_UPDATERCD_BBCLASS`
+      Prevents the :ref:`ref-classes-update-rc.d` class from automatically
+      installing and registering SysV init scripts for packages.
+
+      When a recipe inherits the :ref:`ref-classes-update-rc.d` class, init
+      scripts are typically installed and registered for the packages listed in
+      :term:`INITSCRIPT_PACKAGES`. This ensures that the relevant
+      services are started and stopped at the appropriate runlevels using the
+      traditional SysV init system.
+
+      To prevent the build system from adding these scripts and configurations
+      automatically, set the :term:`INHIBIT_UPDATERCD_BBCLASS` variable as follows::
+
+         INHIBIT_UPDATERCD_BBCLASS = "1"
+
+      By default, the value of :term:`INHIBIT_UPDATERCD_BBCLASS` is empty. Setting
+      it to "0" does not disable inhibition. Only the empty string will disable
+      inhibition.
 
    :term:`INIT_MANAGER`
       Specifies the system init manager to use. Available options are:
@@ -3966,6 +4114,20 @@ system and gives an overview of their function and contents.
 
       See the :term:`MACHINE` variable for additional
       information.
+
+   :term:`INITRAMFS_MAXSIZE`
+      Defines the maximum allowed size of the :term:`Initramfs` image in Kbytes.
+      The build will fail if the :term:`Initramfs` image size exceeds this value.
+
+      The :term:`Initramfs` image size undergoes several calculation steps before
+      being compared to :term:`INITRAMFS_MAXSIZE`.
+      These steps are the same as those used for :term:`IMAGE_ROOTFS_MAXSIZE`
+      and are described in detail in that entry.
+
+      Thus, :term:`INITRAMFS_MAXSIZE` is compared with the result of the calculations
+      and is independent of the final image type (e.g. compressed).
+      A default value for :term:`INITRAMFS_MAXSIZE` is set in
+      :oe_git:`meta/conf/bitbake.conf </openembedded-core/tree/meta/conf/bitbake.conf>`.
 
    :term:`INITRAMFS_MULTICONFIG`
       Defines the multiconfig to create a multiconfig dependency to be used by the :ref:`kernel <ref-classes-kernel>` class.
@@ -4118,8 +4280,7 @@ system and gives an overview of their function and contents.
       would place patch files and configuration fragment files (i.e.
       "out-of-tree"). However, if you want to use a ``defconfig`` file that
       is part of the kernel tree (i.e. "in-tree"), you can use the
-      :term:`KBUILD_DEFCONFIG` variable and append the
-      :term:`KMACHINE` variable to point to the
+      :term:`KBUILD_DEFCONFIG` variable to point to the
       ``defconfig`` file.
 
       To use the variable, set it in the append file for your kernel recipe
@@ -4154,15 +4315,8 @@ system and gives an overview of their function and contents.
       options not explicitly specified will be disabled in the kernel
       config.
 
-      In case :term:`KCONFIG_MODE` is not set the behaviour will depend on where
-      the ``defconfig`` file is coming from. An "in-tree" ``defconfig`` file
-      will be handled in ``alldefconfig`` mode, a ``defconfig`` file placed
-      in ``${WORKDIR}`` through a meta-layer will be handled in
-      ``allnoconfig`` mode.
-
-      An "in-tree" ``defconfig`` file can be selected via the
-      :term:`KBUILD_DEFCONFIG` variable. :term:`KCONFIG_MODE` does not need to
-      be explicitly set.
+      In case :term:`KCONFIG_MODE` is not set the ``defconfig`` file
+      will be handled in ``allnoconfig`` mode.
 
       A ``defconfig`` file compatible with ``allnoconfig`` mode can be
       generated by copying the ``.config`` file from a working Linux kernel
@@ -4455,6 +4609,27 @@ system and gives an overview of their function and contents.
       the :term:`KERNEL_PATH` variable. Both variables are common variables
       used by external Makefiles to point to the kernel source directory.
 
+   :term:`KERNEL_SPLIT_MODULES`
+      When inheriting the :ref:`ref-classes-kernel-module-split` class, this
+      variable controls whether kernel modules are split into separate packages
+      or bundled into a single package.
+
+      For some use cases, a monolithic kernel module package
+      :term:`KERNEL_PACKAGE_NAME` that contains all modules built from the
+      kernel sources may be preferred to speed up the installation.
+
+      By default, this variable is set to ``1``, resulting in one package per
+      module. Setting it to any other value will generate a single monolithic
+      package containing all kernel modules.
+
+      .. note::
+
+         If :term:`KERNEL_SPLIT_MODULES` is set to 0, it is still possible to
+         install all kernel modules at once by adding ``kernel-modules`` (assuming
+         :term:`KERNEL_PACKAGE_NAME` is ``kernel-modules``) to :term:`IMAGE_INSTALL`.
+         The way it works is that a placeholder "kernel-modules" package will be
+         created and will depend on every other individual kernel module packages.
+
    :term:`KERNEL_SRC`
       The location of the kernel sources. This variable is set to the value
       of the :term:`STAGING_KERNEL_DIR` within
@@ -4541,7 +4716,7 @@ system and gives an overview of their function and contents.
       information on how this variable is used.
 
    :term:`LAYERDEPENDS`
-      Lists the layers, separated by spaces, on which this recipe depends.
+      Lists the layers, separated by spaces, on which this layer depends.
       Optionally, you can specify a specific layer version for a dependency
       by adding it to the end of the layer name. Here is an example::
 
@@ -5359,6 +5534,13 @@ system and gives an overview of their function and contents.
       default by setting the variable in a custom distribution
       configuration file.
 
+   :term:`OPKGBUILDCMD`
+      The variable :term:`OPKGBUILDCMD` specifies the command used to build opkg
+      packages when using the :ref:`ref-classes-package_ipk` class. It is
+      defined in :ref:`ref-classes-package_ipk` as::
+
+          OPKGBUILDCMD ??= 'opkg-build -Z zstd -a "${ZSTD_DEFAULTS}"'
+
    :term:`OVERRIDES`
       A colon-separated list of overrides that currently apply. Overrides
       are a BitBake mechanism that allows variables to be selectively
@@ -5391,8 +5573,8 @@ system and gives an overview of their function and contents.
 
       .. note::
 
-         An easy way to see what overrides apply is to search for :term:`OVERRIDES`
-         in the output of the ``bitbake -e`` command. See the
+         An easy way to see what overrides apply is to run the command
+         ``bitbake-getvar -r myrecipe OVERRIDES``. See the
          ":ref:`dev-manual/debugging:viewing variable values`" section in the Yocto
          Project Development Tasks Manual for more information.
 
@@ -6049,7 +6231,7 @@ system and gives an overview of their function and contents.
       For examples of how this data is used, see the
       ":ref:`overview-manual/concepts:automatically added runtime dependencies`"
       section in the Yocto Project Overview and Concepts Manual and the
-      ":ref:`dev-manual/debugging:viewing package information with \`\`oe-pkgdata-util\`\``"
+      ":ref:`dev-manual/debugging:viewing package information with ``oe-pkgdata-util```"
       section in the Yocto Project Development Tasks Manual. For more
       information on the shared, global-state directory, see
       :term:`STAGING_DIR_HOST`.
@@ -6401,7 +6583,7 @@ system and gives an overview of their function and contents.
 
    :term:`PTEST_ENABLED`
       Specifies whether or not :ref:`Package
-      Test <dev-manual/packages:testing packages with ptest>` (ptest)
+      Test <test-manual/ptest:testing packages with ptest>` (ptest)
       functionality is enabled when building a recipe. You should not set
       this variable directly. Enabling and disabling building Package Tests
       at build time should be done by adding "ptest" to (or removing it
@@ -6668,6 +6850,16 @@ system and gives an overview of their function and contents.
    :term:`REPODIR`
       See :term:`bitbake:REPODIR` in the BitBake manual.
 
+   :term:`REQUIRED_COMBINED_FEATURES`
+      When inheriting the :ref:`ref-classes-features_check` class, this variable
+      identifies combined features (the intersection of :term:`MACHINE_FEATURES`
+      and :term:`DISTRO_FEATURES`) that must exist in the current configuration
+      in order for the :term:`OpenEmbedded Build System` to build the recipe. In
+      other words, if the :term:`REQUIRED_COMBINED_FEATURES` variable lists a
+      feature that does not appear in :term:`COMBINED_FEATURES` within the
+      current configuration, then the recipe will be skipped, and if the build
+      system attempts to build the recipe then an error will be triggered.
+
    :term:`REQUIRED_DISTRO_FEATURES`
       When inheriting the
       :ref:`features_check <ref-classes-features_check>`
@@ -6678,6 +6870,32 @@ system and gives an overview of their function and contents.
       appear in :term:`DISTRO_FEATURES` within the current configuration, then
       the recipe will be skipped, and if the build system attempts to build
       the recipe then an error will be triggered.
+
+   :term:`REQUIRED_IMAGE_FEATURES`
+      When inheriting the :ref:`ref-classes-features_check` class, this variable
+      identifies image features that must exist in the current
+      configuration in order for the :term:`OpenEmbedded Build System` to build
+      the recipe. In other words, if the :term:`REQUIRED_IMAGE_FEATURES` variable
+      lists a feature that does not appear in :term:`IMAGE_FEATURES` within the
+      current configuration, then the recipe will be skipped, and if the build
+      system attempts to build the recipe then an error will be triggered.
+
+      Compared to other ``REQUIRED_*_FEATURES`` variables, the
+      :term:`REQUIRED_IMAGE_FEATURES` varible only targets image recipes, as the
+      :term:`IMAGE_FEATURES` variable is handled by the :ref:`ref-classes-core-image`
+      class). However, the :term:`REQUIRED_IMAGE_FEATURES` varible can also be
+      set from a :term:`Configuration File`, such as a distro
+      configuration file, if the list of required image features should apply to
+      all images using this :term:`DISTRO`.
+
+   :term:`REQUIRED_MACHINE_FEATURES`
+      When inheriting the :ref:`ref-classes-features_check` class, this variable
+      identifies :term:`MACHINE_FEATURES` that must exist in the current
+      configuration in order for the :term:`OpenEmbedded Build System` to build
+      the recipe. In other words, if the :term:`REQUIRED_MACHINE_FEATURES` variable
+      lists a feature that does not appear in :term:`MACHINE_FEATURES` within the
+      current configuration, then the recipe will be skipped, and if the build
+      system attempts to build the recipe then an error will be triggered.
 
    :term:`REQUIRED_VERSION`
       If there are multiple versions of a recipe available, this variable
@@ -7340,6 +7558,50 @@ system and gives an overview of their function and contents.
          might break at runtime if the interface of the recipe was changed
          after the other had been built.
 
+   :term:`SIGGEN_LOCKEDSIGS`
+     The list of locked tasks, with the form::
+
+       SIGGEN_LOCKEDSIGS += "<package>:<task>:<signature>"
+
+     If ``<signature>`` exists for the specified ``<task>`` and ``<package>``
+     in the sstate cache, BitBake will use the cached output instead of
+     rebuilding the ``<task>``. If it does not exist, BitBake will build the
+     ``<task>`` and the sstate cache will be used next time.
+
+     Example::
+
+       SIGGEN_LOCKEDSIGS += "bc:do_compile:09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0"
+
+     You can obtain the signature of all the tasks for the recipe ``bc`` using::
+
+       bitbake -S none bc
+
+     Then you can look at files in ``build/tmp/stamps/<arch>/bc`` and look for
+     files like: ``<PV>.do_compile.sigdata.09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0``.
+
+   :term:`SIGGEN_LOCKEDSIGS_TASKSIG_CHECK`
+     Specifies the debug level of task signature check. 3 levels are supported:
+
+     * ``info``: displays a "Note" message to remind the user that a task is locked
+       and the current signature matches the locked one.
+     * ``warn``: displays a "Warning" message if a task is locked and the current
+       signature does not match the locked one.
+     * ``error``: same as warn but displays an "Error" message and aborts.
+
+   :term:`SIGGEN_LOCKEDSIGS_TYPES`
+     Allowed overrides for :term:`SIGGEN_LOCKEDSIGS`. This is mainly used
+     for architecture specific locks. A common value for
+     :term:`SIGGEN_LOCKEDSIGS_TYPES` is ``${PACKAGE_ARCHS}``::
+
+       SIGGEN_LOCKEDSIGS_TYPES += "${PACKAGE_ARCHS}"
+
+       SIGGEN_LOCKEDSIGS_core2-64 += "bc:do_compile:09772aa4532512baf96d433484f27234d4b7c11dd9cda0d6f56fa1b7ce6f25f0"
+       SIGGEN_LOCKEDSIGS_cortexa57 += "bc:do_compile:12178eb6d55ef602a8fe638e49862fd247e07b228f0f08967697b655bfe4bb61"
+
+     Here, the ``do_compile`` task from ``bc`` will be locked only for
+     ``core2-64`` and ``cortexa57`` but not for other architectures such as
+     ``mips32r2``.
+
    :term:`SITEINFO_BITS`
       Specifies the number of bits for the target system CPU. The value
       should be either "32" or "64".
@@ -7449,6 +7711,31 @@ system and gives an overview of their function and contents.
       .. note::
 
          You can specify only a single URL in :term:`SOURCE_MIRROR_URL`.
+
+      .. note::
+
+         If the mirror is protected behind a username and password, the
+         :term:`build host` needs to be configured so the :term:`build system
+         <OpenEmbedded Build System>` is able to fetch from the mirror.
+
+         The recommended way to do that is by setting the following parameters
+         in ``$HOME/.netrc`` (``$HOME`` being the :term:`build host` home
+         directory)::
+
+            machine example.com
+            login <user>
+            password <password>
+
+         This file requires permissions set to ``400`` or ``600`` to prevent
+         other users from reading the file::
+
+            chmod 600 "$HOME/.netrc"
+
+         Another method to configure the username and password is from the URL
+         in :term:`SOURCE_MIRROR_URL` directly, with the ``user`` and ``pswd``
+         parameters::
+
+            SOURCE_MIRROR_URL = "http://example.com/my_source_mirror;user=<user>;pswd=<password>"
 
    :term:`SPDX_ARCHIVE_PACKAGED`
       This option allows to add to :term:`SPDX` output compressed archives
@@ -7578,6 +7865,11 @@ system and gives an overview of their function and contents.
       section in the Yocto Project Board Support Package Developer's Guide
       for additional information.
 
+   :term:`SPL_DTB_BINARY`
+      When inheriting the :ref:`ref-classes-uboot-sign` class, the
+      :term:`SPL_DTB_BINARY` variable contains the name of the SPL binary to be
+      compiled.
+
    :term:`SPL_MKIMAGE_DTCOPTS`
       Options for the device tree compiler passed to ``mkimage -D`` feature
       while creating a FIT image with the :ref:`ref-classes-uboot-sign`
@@ -7598,7 +7890,7 @@ system and gives an overview of their function and contents.
       class.
 
    :term:`SPL_SIGN_KEYNAME`
-      The name of keys used by the :ref:`ref-classes-kernel-fitimage` class
+      The name of keys used by the :ref:`ref-classes-uboot-sign` class
       for signing U-Boot FIT image stored in the :term:`SPL_SIGN_KEYDIR`
       directory. If we have for example a ``dev.key`` key and a ``dev.crt``
       certificate stored in the :term:`SPL_SIGN_KEYDIR` directory, you will
@@ -7828,10 +8120,38 @@ system and gives an overview of their function and contents.
              file://.* https://someserver.tld/share/sstate/PATH;downloadfilename=PATH \
              file://.* file:///some-local-dir/sstate/PATH"
 
+      .. note::
+
+         If the mirror is protected behind a username and password, the
+         :term:`build host` needs to be configured so the :term:`build system
+         <OpenEmbedded Build System>` is able to download the sstate cache using
+         authentication.
+
+         The recommended way to do that is by setting the following parameters
+         in ``$HOME/.netrc`` (``$HOME`` being the :term:`build host` home
+         directory)::
+
+            machine someserver.tld
+            login <user>
+            password <password>
+
+         This file requires permissions set to ``400`` or ``600`` to prevent
+         other users from reading the file::
+
+            chmod 600 "$HOME/.netrc"
+
+         Another method to configure the username and password is from the
+         URL in :term:`SSTATE_MIRRORS` directly, with the ``user`` and ``pswd``
+         parameters::
+
+            SSTATE_MIRRORS ?= "\
+                file://.* https://someserver.tld/share/sstate/PATH;user=<user>;pswd=<password>;downloadfilename=PATH \
+            "
+
       The Yocto Project actually shares the cache data objects built by its
       autobuilder::
 
-         SSTATE_MIRRORS ?= "file://.* http://cdn.jsdelivr.net/yocto/sstate/all/PATH;downloadfilename=PATH"
+         SSTATE_MIRRORS ?= "file://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH"
 
       As such binary artifacts are built for the generic QEMU machines
       supported by the various Poky releases, they are less likely to be
@@ -7856,6 +8176,26 @@ system and gives an overview of their function and contents.
 
       For details on the process, see the
       :ref:`staging <ref-classes-staging>` class.
+
+   :term:`SSTATE_SKIP_CREATION`
+      The :term:`SSTATE_SKIP_CREATION` variable can be used to skip the
+      creation of :ref:`shared state <overview-manual/concepts:shared state cache>`
+      tarball files. It makes sense e.g. for image creation tasks as tarring images
+      and keeping them in sstate would consume a lot of disk space.
+
+      In general it is not recommended to use this variable as missing sstate
+      artefacts adversely impact the build, particularly for entries in the
+      middle of dependency chains. The case it can make sense is where the
+      size and time costs of the artefact are similar to just running the
+      tasks. This generally only applies to end artefact output like images.
+
+      The syntax to disable it for one task is::
+
+         SSTATE_SKIP_CREATION:task-image-complete = "1"
+
+      The syntax to disable it for the whole recipe is::
+
+         SSTATE_SKIP_CREATION = "1"
 
    :term:`STAGING_BASE_LIBDIR_NATIVE`
       Specifies the path to the ``/lib`` subdirectory of the sysroot
@@ -7898,7 +8238,7 @@ system and gives an overview of their function and contents.
       directory for the build host.
 
    :term:`STAGING_DIR`
-      Helps construct the ``recipe-sysroots`` directory, which is used
+      Helps construct the ``recipe-sysroot*`` directories, which are used
       during packaging.
 
       For information on how staging for recipe-specific sysroots occurs,
@@ -8123,6 +8463,35 @@ system and gives an overview of their function and contents.
              /sysroot-only \
              "
 
+      Consider the following example in which you need to manipulate this variable.
+      Assume you have a recipe ``A`` that provides a shared library ``.so.*`` that is
+      installed into a custom folder other than "``${libdir}``"
+      or "``${base_libdir}``", let's say "``/opt/lib``".
+
+      .. note::
+
+         This is not a recommended way to deal with shared libraries, but this
+         is just to show the usefulness of setting :term:`SYSROOT_DIRS`.
+
+      When a recipe ``B`` :term:`DEPENDS` on ``A``, it means what is in
+      :term:`SYSROOT_DIRS` will be copied from :term:`D` of the recipe ``A``
+      into ``B``'s :term:`SYSROOT_DESTDIR` that is "``${WORKDIR}/sysroot-destdir``".
+
+      Now, since ``/opt/lib`` is not in :term:`SYSROOT_DIRS`, it will never be copied to
+      ``A``'s :term:`RECIPE_SYSROOT`, which is "``${WORKDIR}/recipe-sysroot``". So,
+      the linking process will fail.
+
+      To fix this, you need to add ``/opt/lib`` to :term:`SYSROOT_DIRS`::
+
+         SYSROOT_DIRS:append = " /opt/lib"
+
+      .. note::
+         Even after setting ``/opt/lib`` to :term:`SYSROOT_DIRS`, the linking process will still fail
+         because the linker does not know that location, since :term:`TARGET_LDFLAGS`
+         doesn't contain it (if your recipe is for the target). Therefore, so you should add::
+
+            TARGET_LDFLAGS:append = " -L${RECIPE_SYSROOT}/opt/lib"
+
    :term:`SYSROOT_DIRS_IGNORE`
       Directories that are not staged into the sysroot by the
       :ref:`ref-tasks-populate_sysroot` task. You
@@ -8145,35 +8514,6 @@ system and gives an overview of their function and contents.
              ${datadir}/terminfo \
              ${libdir}/${BPN}/ptest \
              "
-
-      Consider the following example in which you need to manipulate this variable.
-      Assume you have a recipe ``A`` that provides a shared library ``.so.*`` that is
-      installed into a custom folder other than "``${libdir}``"
-      or "``${base_libdir}``", let's say "``/opt/lib``".
-
-      .. note::
-
-         This is not a recommended way to deal with shared libraries, but this
-         is just to show the usefulness of setting :term:`SYSROOT_DIRS`.
-
-      When a recipe ``B`` :term:`DEPENDS` on ``A``, it means what is in
-      :term:`SYSROOT_DIRS` will be copied from :term:`D` of the recipe ``B``
-      into ``B``'s :term:`SYSROOT_DESTDIR` that is "``${WORKDIR}/sysroot-destdir``".
-
-      Now, since ``/opt/lib`` is not in :term:`SYSROOT_DIRS`, it will never be copied to
-      ``A``'s :term:`RECIPE_SYSROOT`, which is "``${WORKDIR}/recipe-sysroot``". So,
-      the linking process will fail.
-
-      To fix this, you need to add ``/opt/lib`` to :term:`SYSROOT_DIRS`::
-
-         SYSROOT_DIRS:append = " /opt/lib"
-
-      .. note::
-         Even after setting ``/opt/lib`` to :term:`SYSROOT_DIRS`, the linking process will still fail
-         because the linker does not know that location, since :term:`TARGET_LDFLAGS`
-         doesn't contain it (if your recipe is for the target). Therefore, so you should add::
-
-            TARGET_LDFLAGS:append = " -L${RECIPE_SYSROOT}/opt/lib"
 
    :term:`SYSROOT_DIRS_NATIVE`
       Extra directories staged into the sysroot by the
@@ -8558,8 +8898,8 @@ system and gives an overview of their function and contents.
       file.
 
       For more information on testing images, see the
-      ":ref:`dev-manual/runtime-testing:performing automated runtime testing`"
-      section in the Yocto Project Development Tasks Manual.
+      ":ref:`test-manual/runtime-testing:performing automated runtime testing`"
+      section in the Yocto Project Test Environment Manual.
 
    :term:`TEST_SERIALCONTROL_CMD`
       For automated hardware testing, specifies the command to use to
@@ -8631,8 +8971,8 @@ system and gives an overview of their function and contents.
          TEST_SUITES = "test_A test_B"
 
       For more information on testing images, see the
-      ":ref:`dev-manual/runtime-testing:performing automated runtime testing`"
-      section in the Yocto Project Development Tasks Manual.
+      ":ref:`test-manual/runtime-testing:performing automated runtime testing`"
+      section in the Yocto Project Test Environment Manual.
 
    :term:`TEST_TARGET`
       Specifies the target controller to use when running tests against a
@@ -8650,8 +8990,8 @@ system and gives an overview of their function and contents.
       You can provide the following arguments with :term:`TEST_TARGET`:
 
       -  *"qemu":* Boots a QEMU image and runs the tests. See the
-         ":ref:`dev-manual/runtime-testing:enabling runtime tests on qemu`" section
-         in the Yocto Project Development Tasks Manual for more
+         ":ref:`test-manual/runtime-testing:enabling runtime tests on qemu`" section
+         in the Yocto Project Test Environment Manual for more
          information.
 
       -  *"simpleremote":* Runs the tests on target hardware that is
@@ -8666,8 +9006,8 @@ system and gives an overview of their function and contents.
             ``meta/lib/oeqa/controllers/simpleremote.py``.
 
       For information on running tests on hardware, see the
-      ":ref:`dev-manual/runtime-testing:enabling runtime tests on hardware`"
-      section in the Yocto Project Development Tasks Manual.
+      ":ref:`test-manual/runtime-testing:enabling runtime tests on hardware`"
+      section in the Yocto Project Test Environment Manual.
 
    :term:`TEST_TARGET_IP`
       The IP address of your hardware under test. The :term:`TEST_TARGET_IP`
@@ -8703,8 +9043,8 @@ system and gives an overview of their function and contents.
 
       For more information
       on enabling, running, and writing these tests, see the
-      ":ref:`dev-manual/runtime-testing:performing automated runtime testing`"
-      section in the Yocto Project Development Tasks Manual and the
+      ":ref:`test-manual/runtime-testing:performing automated runtime testing`"
+      section in the Yocto Project Test Environment Manual and the
       ":ref:`ref-classes-testimage`" section.
 
    :term:`THISDIR`
@@ -8762,7 +9102,7 @@ system and gives an overview of their function and contents.
       :doc:`/sdk-manual/index` manual.
 
       Note that this variable applies to building an SDK, not an eSDK,
-      in which case the term:`TOOLCHAIN_HOST_TASK_ESDK` setting should be
+      in which case the :term:`TOOLCHAIN_HOST_TASK_ESDK` setting should be
       used instead.
 
    :term:`TOOLCHAIN_HOST_TASK_ESDK`
@@ -9146,6 +9486,22 @@ system and gives an overview of their function and contents.
       passes and uses "all" for the target during the U-Boot building
       process.
 
+   :term:`UNINATIVE_CHECKSUM`
+      When inheriting the :ref:`ref-classes-uninative` class, the
+      :term:`UNINATIVE_CHECKSUM` variable flags contain the checksums of the
+      uninative tarball as specified by the :term:`UNINATIVE_URL` variable.
+      There should be one checksum per tarballs published at
+      :term:`UNINATIVE_URL`, which match architectures. For example::
+
+         UNINATIVE_CHECKSUM[aarch64] ?= "812045d826b7fda88944055e8526b95a5a9440bfef608d5b53fd52faab49bf85"
+         UNINATIVE_CHECKSUM[i686] ?= "5cc28efd0c15a75de4bcb147c6cce65f1c1c9d442173a220f08427f40a3ffa09"
+         UNINATIVE_CHECKSUM[x86_64] ?= "4c03d1ed2b7b4e823aca4a1a23d8f2e322f1770fc10e859adcede5777aff4f3a"
+
+   :term:`UNINATIVE_URL`
+      When inheriting the :ref:`ref-classes-uninative` class, the
+      :term:`UNINATIVE_URL` variable contains the URL where the uninative
+      tarballs are published.
+
    :term:`UNKNOWN_CONFIGURE_OPT_IGNORE`
       Specifies a list of options that, if reported by the configure script
       as being invalid, should not generate a warning during the
@@ -9240,6 +9596,18 @@ system and gives an overview of their function and contents.
       See the ":ref:`dev-manual/device-manager:selecting a device manager`" section in
       the Yocto Project Development Tasks Manual for information on how to
       use this variable.
+
+   :term:`USE_NLS`
+      Determine if language translations should be built for recipes that can
+      build them. This variable can be equal to:
+
+      -  ``yes``: translations are enabled.
+      -  ``no``: translation are disabled.
+
+      Recipes can use the value of this variable to enable language
+      translations in their build. Classes such as :ref:`ref-classes-gettext`
+      use the value of this variable to enable :wikipedia:`Gettext <Gettext>`
+      support.
 
    :term:`USE_VT`
       When using
@@ -9432,6 +9800,20 @@ system and gives an overview of their function and contents.
       can control with this variable, see the
       ":ref:`ref-classes-insane`" section.
 
+   :term:`WIC_CREATE_EXTRA_ARGS`
+      If the :term:`IMAGE_FSTYPES` variable contains "wic", the build
+      will generate a
+      :ref:`Wic image <dev-manual/wic:creating partitioned images using wic>`
+      automatically when BitBake builds an image recipe. As part of
+      this process BitBake will invoke the "`wic create`" command. The
+      :term:`WIC_CREATE_EXTRA_ARGS` variable is placed at the end of this
+      command which allows the user to supply additional arguments.
+
+      One such useful purpose for this mechanism is to add the ``-D`` (or
+      ``--debug``) argument to the "`wic create`" command. This increases the
+      amount of debugging information written out to the Wic log during the
+      Wic creation process.
+
    :term:`WKS_FILE`
       Specifies the location of the Wic kickstart file that is used by the
       OpenEmbedded build system to create a partitioned image
@@ -9548,4 +9930,3 @@ system and gives an overview of their function and contents.
 
       On systems where many tasks run in parallel, setting a limit to this
       can be helpful in controlling system resource usage.
-
