@@ -128,6 +128,8 @@ SRC_URI = "https://download.qemu.org/${BPN}-${PV}.tar.xz \
            file://CVE-2024-3446-0005.patch \
            file://CVE-2024-3446-0006.patch \
            file://CVE-2024-3447.patch \
+           file://CVE-2024-8354.patch \
+           file://CVE-2025-12464.patch \
            "
 UPSTREAM_CHECK_REGEX = "qemu-(?P<pver>\d+(\.\d+)+)\.tar"
 
@@ -166,6 +168,9 @@ CVE_CHECK_IGNORE += "CVE-2023-1386"
 
 # virtio-snd was implemented in 8.2.0, so version 6.2.0 is not yet affected
 CVE_CHECK_IGNORE += "CVE-2024-7730"
+
+# These issues were introduced in v10.0.0-rc0
+CVE_CHECK_IGNORE += "CVE-2025-54566 CVE-2025-54567"
 
 COMPATIBLE_HOST:mipsarchn32 = "null"
 COMPATIBLE_HOST:mipsarchn64 = "null"
